@@ -4,7 +4,7 @@ import { makeUpdateUsuarioUseCase } from '../../../uses-cases/factory/make-updat
 
 export async function update(request: FastifyRequest, reply: FastifyReply) {
   const registerParamsSchema = z.object({
-    id: z.number().int(),
+    id: z.coerce.number().int(),
   })
 
   const { id } = registerParamsSchema.parse(request.params)

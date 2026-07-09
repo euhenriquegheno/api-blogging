@@ -7,7 +7,7 @@ export async function deleteUsuario(
   reply: FastifyReply,
 ) {
   const registerParamsSchema = z.object({
-    id: z.number(),
+    id: z.coerce.number(),
   })
 
   const { id } = registerParamsSchema.parse(request.params)

@@ -5,9 +5,9 @@ export class DeleteUsuarioUseCase {
   constructor(private usuarioRepository: IUsuarioRepository) {}
 
   async handler(id: number) {
-    const usuario = await this.usuarioRepository.findById(id)
+    const deleted = await this.usuarioRepository.delete(id)
 
-    if (!usuario) {
+    if (!deleted) {
       throw new ResourceNotFoundError('Usuário não encontrado')
     }
   }

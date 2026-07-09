@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import z from 'zod'
 import { makeCreateUsuarioUseCase } from '../../../uses-cases/factory/make-create-usuario-use-case'
+import { hash } from 'bcrypt'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
@@ -15,15 +16,25 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     request.body,
   )
 
-  const createPessoaUseCase = makeCreateUsuarioUseCase()
+  const hashedPassword = await hash(senha, 8)
 
-  const pessoa = await createPessoaUseCase.handler({
+  const userWithHashedPassword = {
     email,
-    senha,
+    senha: hashedPassword,
     nome,
     cpf,
     tipo,
-  })
+  }
 
-  return reply.status(201).send(pessoa)
+  const createPessoaUseCase = makeCreateUsuarioUseCase()
+
+  const usuario = await createPessoaUseCase.handler(userWithHashedPassword)
+
+  return reply.status(201).send({
+    id: usuario?.id,
+    email: usuario?.email,
+    nome: usuario?.nome,
+    cpf: usuario?.cpf,
+    tipo: usuario?.tipo,
+  })
 }

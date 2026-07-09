@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCreateUsuarioUseCase = makeCreateUsuarioUseCase;
-const usuario_repository_1 = require("../../repositories/pg/usuario.repository");
+const usuario_repository_1 = require("../../repositories/typeorm/usuario.repository");
 const create_usuario_1 = require("../create-usuario");
 function makeCreateUsuarioUseCase() {
     const usuarioRepository = new usuario_repository_1.UsuarioRepository();
