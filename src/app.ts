@@ -1,6 +1,8 @@
 import fastify from 'fastify'
-import { pessoaRoutes } from './http/controllers/pessoa/routes'
+import { usuarioRoutes } from './http/controllers/usuario/routes'
+import { publicacaoRoutes } from './http/controllers/publicacao/routes'
 
 export const app = fastify()
 
-app.register(pessoaRoutes)
+app.register(usuarioRoutes)
+app.register(publicacaoRoutes)
