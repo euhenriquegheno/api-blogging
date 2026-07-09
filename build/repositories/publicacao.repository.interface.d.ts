@@ -4,6 +4,6 @@ export interface IPublicacaoRepository {
     findById(id: string): Promise<IPublicacao | null>;
     create(publicacao: IPublicacao): Promise<IPublicacao>;
     update(publicacao: IPublicacao): Promise<IPublicacao>;
-    delete(id: string): Promise<void>;
+    delete(id: string): Promise<boolean>;
 }
 //# sourceMappingURL=publicacao.repository.interface.d.ts.map

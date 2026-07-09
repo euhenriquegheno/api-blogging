@@ -13,6 +13,16 @@ export class PublicacaoRepository implements IPublicacaoRepository {
 
   async findAll(page: number, limit: number): Promise<IPublicacao[]> {
     return this.repository.find({
+      select: {
+        id: true,
+        titulo: true,
+        conteudo: true,
+        usuario: {
+          id: true,
+          nome: true,
+          email: true,
+        },
+      },
       relations: { usuario: true },
       skip: (page - 1) * limit,
       take: limit,
@@ -21,6 +31,16 @@ export class PublicacaoRepository implements IPublicacaoRepository {
 
   async findById(id: string): Promise<IPublicacao | null> {
     return this.repository.findOne({
+      select: {
+        id: true,
+        titulo: true,
+        conteudo: true,
+        usuario: {
+          id: true,
+          nome: true,
+          email: true,
+        },
+      },
       relations: { usuario: true },
       where: { id },
     })
@@ -34,7 +54,9 @@ export class PublicacaoRepository implements IPublicacaoRepository {
     return this.repository.save(publicacao)
   }
 
-  async delete(id: string): Promise<void> {
-    await this.repository.delete(id)
+  async delete(id: string): Promise<boolean> {
+    const result = await this.repository.delete(id)
+
+    return result.affected !== 0
   }
 }

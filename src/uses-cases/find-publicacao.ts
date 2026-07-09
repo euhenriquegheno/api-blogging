@@ -8,7 +8,7 @@ export class FindPublicacaoUseCase {
     const product = await this.publicacaoRepository.findById(id)
 
     if (!product) {
-      throw new ResourceNotFoundError()
+      throw new ResourceNotFoundError('Publicação não encontrada')
     }
     return product
   }

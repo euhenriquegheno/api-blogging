@@ -3,10 +3,7 @@ import z from 'zod'
 import { makeUpdatePublicacaoUseCase } from '../../../uses-cases/factory/make-update-publicacao-use-case'
 import { Usuario } from '../../../entities/usuario.entity'
 
-export async function updatePublicacao(
-  request: FastifyRequest,
-  reply: FastifyReply,
-) {
+export async function update(request: FastifyRequest, reply: FastifyReply) {
   const registerParamsSchema = z.object({
     id: z.coerce.string(),
   })

@@ -9,6 +9,16 @@ class PublicacaoRepository {
     }
     async findAll(page, limit) {
         return this.repository.find({
+            select: {
+                id: true,
+                titulo: true,
+                conteudo: true,
+                usuario: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                },
+            },
             relations: { usuario: true },
             skip: (page - 1) * limit,
             take: limit,
@@ -16,6 +26,16 @@ class PublicacaoRepository {
     }
     async findById(id) {
         return this.repository.findOne({
+            select: {
+                id: true,
+                titulo: true,
+                conteudo: true,
+                usuario: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                },
+            },
             relations: { usuario: true },
             where: { id },
         });
@@ -27,7 +47,8 @@ class PublicacaoRepository {
         return this.repository.save(publicacao);
     }
     async delete(id) {
-        await this.repository.delete(id);
+        const result = await this.repository.delete(id);
+        return result.affected !== 0;
     }
 }
 exports.PublicacaoRepository = PublicacaoRepository;

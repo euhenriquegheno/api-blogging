@@ -1,4 +1,4 @@
-import { UsuarioRepository } from '../../repositories/pg/usuario.repository'
+import { UsuarioRepository } from '../../repositories/typeorm/usuario.repository'
 import { CreateUsuarioUseCase } from '../create-usuario'
 
 export function makeCreateUsuarioUseCase() {
