@@ -25,6 +25,7 @@ jobs:
       - name: Instalar dependências
         run: npm ci
       - name: Compilar
+        run: npm run build
       - name: Executar testes e validar cobertura
         run: npm run test:coverage
 
