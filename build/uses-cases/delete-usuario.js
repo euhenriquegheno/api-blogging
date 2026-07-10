@@ -7,8 +7,8 @@ class DeleteUsuarioUseCase {
         this.usuarioRepository = usuarioRepository;
     }
     async handler(id) {
-        const usuario = await this.usuarioRepository.findById(id);
-        if (!usuario) {
+        const deleted = await this.usuarioRepository.delete(id);
+        if (!deleted) {
             throw new resource_not_found_1.ResourceNotFoundError('Usuário não encontrado');
         }
     }

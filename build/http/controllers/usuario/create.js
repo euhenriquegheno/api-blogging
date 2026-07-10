@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.create = create;
 const zod_1 = __importDefault(require("zod"));
 const make_create_usuario_use_case_1 = require("../../../uses-cases/factory/make-create-usuario-use-case");
+const bcrypt_1 = require("bcrypt");
 async function create(request, reply) {
     const registerBodySchema = zod_1.default.object({
         email: zod_1.default.string(),
@@ -15,14 +16,22 @@ async function create(request, reply) {
         tipo: zod_1.default.coerce.number(),
     });
     const { email, senha, nome, cpf, tipo } = registerBodySchema.parse(request.body);
-    const createPessoaUseCase = (0, make_create_usuario_use_case_1.makeCreateUsuarioUseCase)();
-    const pessoa = await createPessoaUseCase.handler({
+    const hashedPassword = await (0, bcrypt_1.hash)(senha, 8);
+    const userWithHashedPassword = {
         email,
-        senha,
+        senha: hashedPassword,
         nome,
         cpf,
         tipo,
+    };
+    const createPessoaUseCase = (0, make_create_usuario_use_case_1.makeCreateUsuarioUseCase)();
+    const usuario = await createPessoaUseCase.handler(userWithHashedPassword);
+    return reply.status(201).send({
+        id: usuario?.id,
+        email: usuario?.email,
+        nome: usuario?.nome,
+        cpf: usuario?.cpf,
+        tipo: usuario?.tipo,
     });
-    return reply.status(201).send(pessoa);
 }
 //# sourceMappingURL=create.js.map

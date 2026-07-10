@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { ILike, Repository } from 'typeorm'
 import { IPublicacaoRepository } from '../publicacao.repository.interface'
 import { Publicacao } from '../../entities/publicacao.entity'
 import { appDataSource } from '../../lib/typeorm/typeorm'
@@ -43,6 +43,25 @@ export class PublicacaoRepository implements IPublicacaoRepository {
       },
       relations: { usuario: true },
       where: { id },
+    })
+  }
+
+  async search(term: string): Promise<IPublicacao[]> {
+    const matchingTerm = ILike(`%${term}%`)
+
+    return this.repository.find({
+      select: {
+        id: true,
+        titulo: true,
+        conteudo: true,
+        usuario: {
+          id: true,
+          nome: true,
+          email: true,
+        },
+      },
+      relations: { usuario: true },
+      where: [{ titulo: matchingTerm }, { conteudo: matchingTerm }],
     })
   }
 

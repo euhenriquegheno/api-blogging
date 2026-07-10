@@ -5,6 +5,7 @@ export declare class PublicacaoRepository implements IPublicacaoRepository {
     constructor();
     findAll(page: number, limit: number): Promise<IPublicacao[]>;
     findById(id: string): Promise<IPublicacao | null>;
+    search(term: string): Promise<IPublicacao[]>;
     create(publicacao: IPublicacao): Promise<IPublicacao>;
     update(publicacao: IPublicacao): Promise<IPublicacao>;
     delete(id: string): Promise<boolean>;
