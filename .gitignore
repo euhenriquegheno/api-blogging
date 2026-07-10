@@ -1,3 +1,9 @@
 /node_modules
 /.npm-cache
 .env
+/build
+/coverage
+tests/*.js
+tests/*.js.map
+tests/*.d.ts
+tests/*.d.ts.map

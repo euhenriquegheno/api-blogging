@@ -2,9 +2,12 @@ name: CI/CD
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - testes-actions
   pull_request:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -13,36 +16,49 @@ permissions:
 
 jobs:
   test:
+    name: Build and tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Configurar Node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: "22"
           cache: npm
-      - name: Instalar dependências
+
+      - name: Install dependencies
         run: npm ci
-      - name: Compilar
+
+      - name: Build project
         run: npm run build
-      - name: Executar testes e validar cobertura
+
+      - name: Run tests with coverage
         run: npm run test:coverage
 
   deploy:
+    name: Publish Docker image
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: test
+    needs:
+      - test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Autenticar no GitHub Container Registry
+
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Gerar metadados da imagem
+
+      - name: Generate image metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -50,7 +66,8 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha
-      - name: Construir e publicar imagem
+
+      - name: Build and publish image
         uses: docker/build-push-action@v6
         with:
           context: .
