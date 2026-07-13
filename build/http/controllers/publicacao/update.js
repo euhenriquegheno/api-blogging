@@ -8,7 +8,7 @@ const zod_1 = __importDefault(require("zod"));
 const make_update_publicacao_use_case_1 = require("../../../uses-cases/factory/make-update-publicacao-use-case");
 async function update(request, reply) {
     const registerParamsSchema = zod_1.default.object({
-        id: zod_1.default.coerce.string(),
+        id: zod_1.default.uuid(),
     });
     const { id } = registerParamsSchema.parse(request.params);
     const registerBodySchema = zod_1.default.object({

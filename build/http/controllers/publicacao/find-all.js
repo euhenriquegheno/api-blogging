@@ -8,8 +8,8 @@ const zod_1 = __importDefault(require("zod"));
 const make_find_all_publicacao_use_case_1 = require("../../../uses-cases/factory/make-find-all-publicacao-use-case");
 async function findAllPublicacao(request, reply) {
     const registerQuerySchema = zod_1.default.object({
-        page: zod_1.default.coerce.number().default(1),
-        limit: zod_1.default.coerce.number().default(10),
+        page: zod_1.default.coerce.number().int().positive().default(1),
+        limit: zod_1.default.coerce.number().int().positive().max(100).default(10),
     });
     const { page, limit } = registerQuerySchema.parse(request.query);
     const findAllPublicacaoUseCase = (0, make_find_all_publicacao_use_case_1.makeFindAllPublicacaoUseCase)();

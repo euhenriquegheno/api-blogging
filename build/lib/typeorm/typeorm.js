@@ -13,6 +13,7 @@ exports.appDataSource = new typeorm_1.DataSource({
     password: env_1.env.DATABASE_PASSWORD,
     database: env_1.env.DATABASE_NAME,
     logging: env_1.env.NODE_ENV === 'development',
+    synchronize: env_1.env.NODE_ENV === 'development',
     entities: [usuario_entity_1.Usuario, publicacao_entity_1.Publicacao],
 });
 exports.appDataSource
