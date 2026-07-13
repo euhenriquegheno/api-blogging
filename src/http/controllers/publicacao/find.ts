@@ -7,7 +7,7 @@ export async function findPublicacao(
   reply: FastifyReply,
 ) {
   const registerParamsSchema = z.object({
-    id: z.coerce.string(),
+    id: z.uuid(),
   })
 
   const { id } = registerParamsSchema.parse(request.params)

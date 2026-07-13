@@ -7,8 +7,8 @@ export async function findAllPublicacao(
   reply: FastifyReply,
 ) {
   const registerQuerySchema = z.object({
-    page: z.coerce.number().default(1),
-    limit: z.coerce.number().default(10),
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(10),
   })
 
   const { page, limit } = registerQuerySchema.parse(request.query)

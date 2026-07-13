@@ -5,7 +5,7 @@ import { Usuario } from '../../../entities/usuario.entity'
 
 export async function update(request: FastifyRequest, reply: FastifyReply) {
   const registerParamsSchema = z.object({
-    id: z.coerce.string(),
+    id: z.uuid(),
   })
 
   const { id } = registerParamsSchema.parse(request.params)
