@@ -58,6 +58,11 @@ npm run start:dev
 
 A API ficará disponível em `http://localhost:3000`.
 
+## Swagger
+
+Com a API em execução, abra `http://localhost:3000/docs` para consultar e
+testar interativamente os endpoints documentados.
+
 ## API de postagens
 
 | Método | Rota | Descrição |
