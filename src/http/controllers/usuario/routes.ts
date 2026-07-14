@@ -7,67 +7,87 @@ import { update } from './update'
 import { usuarioBodySchema, usuarioSchema } from '../../swagger-schemas'
 
 export async function usuarioRoutes(app: FastifyInstance) {
-  app.post('/user', {
-    schema: {
-      tags: ['Usuários'],
-      summary: 'Cria um usuário',
-      body: usuarioBodySchema,
-      response: { 201: usuarioSchema },
-    },
-  }, create)
-
-  app.get('/user/:id', {
-    schema: {
-      tags: ['Usuários'],
-      summary: 'Obtém um usuário pelo ID',
-      params: {
-        type: 'object',
-        required: ['id'],
-        properties: { id: { type: 'number' } },
+  app.post(
+    '/user',
+    {
+      schema: {
+        tags: ['Usuários'],
+        summary: 'Cria um usuário',
+        body: usuarioBodySchema,
+        response: { 201: usuarioSchema },
       },
-      response: { 200: usuarioSchema },
     },
-  }, findUsuario)
+    create,
+  )
 
-  app.get('/user', {
-    schema: {
-      tags: ['Usuários'],
-      summary: 'Lista usuários',
-      querystring: {
-        type: 'object',
-        properties: {
-          page: { type: 'number', default: 1 },
-          limit: { type: 'number', default: 10 },
+  app.get(
+    '/user/:id',
+    {
+      schema: {
+        tags: ['Usuários'],
+        summary: 'Obtém um usuário pelo ID',
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'number' } },
         },
+        response: { 200: usuarioSchema },
       },
-      response: { 200: { type: 'array', items: usuarioSchema } },
     },
-  }, findAllUsuarios)
+    findUsuario,
+  )
 
-  app.delete('/user/:id', {
-    schema: {
-      tags: ['Usuários'],
-      summary: 'Exclui um usuário',
-      params: {
-        type: 'object',
-        required: ['id'],
-        properties: { id: { type: 'number' } },
+  app.get(
+    '/user',
+    {
+      schema: {
+        tags: ['Usuários'],
+        summary: 'Lista usuários',
+        querystring: {
+          type: 'object',
+          properties: {
+            page: { type: 'number', default: 1 },
+            limit: { type: 'number', default: 10 },
+          },
+        },
+        response: { 200: { type: 'array', items: usuarioSchema } },
       },
-      response: { 204: { type: 'null' } },
     },
-  }, deleteUsuario)
+    findAllUsuarios,
+  )
 
-  app.put('/user/:id', {
-    schema: {
-      tags: ['Usuários'],
-      summary: 'Edita um usuário',
-      params: {
-        type: 'object',
-        required: ['id'],
-        properties: { id: { type: 'number' } },
+  app.delete(
+    '/user/:id',
+    {
+      schema: {
+        tags: ['Usuários'],
+        summary: 'Exclui um usuário',
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'number' } },
+        },
+        response: { 204: { type: 'null' } },
       },
-      body: usuarioBodySchema,
-      response: { 200: usuarioSchema },
     },
-  }, update)
+    deleteUsuario,
+  )
+
+  app.put(
+    '/user/:id',
+    {
+      schema: {
+        tags: ['Usuários'],
+        summary: 'Edita um usuário',
+        params: {
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'number' } },
+        },
+        body: usuarioBodySchema,
+        response: { 200: usuarioSchema },
+      },
+    },
+    update,
+  )
 }
