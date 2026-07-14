@@ -6,9 +6,9 @@ import { deleteUsuario } from './delete'
 import { update } from './update'
 
 export async function usuarioRoutes(app: FastifyInstance) {
-  app.post('/usuario', create)
-  app.get('/usuario/:id', findUsuario)
-  app.get('/usuario', findAllUsuarios)
-  app.delete('/usuario/:id', deleteUsuario)
-  app.put('/usuario/:id', update)
+  app.post('/user', create)
+  app.get('/user/:id', findUsuario)
+  app.get('/user', findAllUsuarios)
+  app.delete('/user/:id', deleteUsuario)
+  app.put('/user/:id', update)
 }

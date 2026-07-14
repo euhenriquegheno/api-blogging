@@ -9,6 +9,20 @@ COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 
+FROM node:22-alpine AS development
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY tsconfig.json ./
+COPY src ./src
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start:dev"]
+
 FROM node:22-alpine AS production
 
 WORKDIR /app

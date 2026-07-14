@@ -1,7 +1,15 @@
-const { CreatePublicacaoUseCase } = require('../build/uses-cases/create-publicacao')
-const { DeletePublicacaoUseCase } = require('../build/uses-cases/delete-publicacao')
-const { ResourceNotFoundError } = require('../build/uses-cases/errors/resource-not-found')
-const { UpdatePublicacaoUseCase } = require('../build/uses-cases/update-publicacao')
+const {
+  CreatePublicacaoUseCase,
+} = require('../build/uses-cases/create-publicacao')
+const {
+  DeletePublicacaoUseCase,
+} = require('../build/uses-cases/delete-publicacao')
+const {
+  ResourceNotFoundError,
+} = require('../build/uses-cases/errors/resource-not-found')
+const {
+  UpdatePublicacaoUseCase,
+} = require('../build/uses-cases/update-publicacao')
 
 class InMemoryPublicacaoRepository {
   publicacoes = []
@@ -24,13 +32,17 @@ class InMemoryPublicacaoRepository {
   }
 
   async update(publicacao) {
-    const index = this.publicacoes.findIndex((item) => item.id === publicacao.id)
+    const index = this.publicacoes.findIndex(
+      (item) => item.id === publicacao.id,
+    )
     this.publicacoes[index] = publicacao
     return publicacao
   }
 
   async delete(id) {
-    const index = this.publicacoes.findIndex((publicacao) => publicacao.id === id)
+    const index = this.publicacoes.findIndex(
+      (publicacao) => publicacao.id === id,
+    )
 
     if (index === -1) {
       return false
@@ -87,9 +99,9 @@ describe('Publicacao use cases', () => {
       new InMemoryPublicacaoRepository(),
     )
 
-    await expect(useCase.handler('missing', makePublicacao())).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    )
+    await expect(
+      useCase.handler('missing', makePublicacao()),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('deletes an existing post', async () => {

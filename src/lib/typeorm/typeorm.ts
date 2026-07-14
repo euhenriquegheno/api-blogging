@@ -16,11 +16,9 @@ export const appDataSource = new DataSource({
   entities: [Usuario, Publicacao],
 })
 
-appDataSource
-  .initialize()
-  .then(() => {
+export async function initializeDataSource() {
+  if (!appDataSource.isInitialized) {
+    await appDataSource.initialize()
     console.log('Database with typeorm connected!')
-  })
-  .catch((err) => {
-    console.error('Error during Data Source initialization', err)
-  })
+  }
+}

@@ -1,47 +1,144 @@
-# api-blogging
+# API Blogging
+
+API REST para uma plataforma educacional de publicações. Ela permite cadastrar
+docentes (usuários), criar postagens e consultar conteúdo por listagem, ID ou
+busca textual.
+
+## Tecnologias
+
+- Node.js e TypeScript
+- Fastify para HTTP e roteamento
+- PostgreSQL hospedado no Supabase
+- TypeORM para persistência e mapeamento das entidades
+- Docker para desenvolvimento e produção
+- Jest para testes unitários e cobertura
+- GitHub Actions para validação contínua e publicação da imagem no Docker Hub
+
+## Arquitetura
+
+```text
+HTTP routes/controllers -> use cases -> repositories -> TypeORM/PostgreSQL
+```
+
+- **Controllers** validam requisições com Zod e formam respostas HTTP.
+- **Use cases** concentram as regras de negócio.
+- **Repositories** isolam consultas e gravações no banco.
+- **Entities** definem as tabelas `usuario` e `publicacao` e a relação entre
+  elas.
+
+## Configuração local
+
+Instale as dependências:
+
+```bash
+npm ci
+```
+
+Copie `.env.example` para `.env` e preencha as variáveis de conexão do banco:
+
+```env
+NODE_ENV=development
+PORT=3000
+DATABASE_USER=
+DATABASE_HOST=
+DATABASE_NAME=
+DATABASE_PASSWORD=
+DATABASE_PORT=
+```
+
+Para Supabase, use a conexão **Session pooler**. Ela funciona em redes IPv4 e
+usa um host semelhante a `aws-<regiao>.pooler.supabase.com`. O arquivo `.env`
+é ignorado pelo Git e nunca deve ser enviado ao repositório.
+
+Inicie o servidor:
+
+```bash
+npm run start:dev
+```
+
+A API ficará disponível em `http://localhost:3000`.
+
+## API de postagens
+
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| GET | `/posts?page=1&limit=10` | Lista postagens paginadas. |
+| GET | `/posts/search?q=termo` | Busca no título ou conteúdo. |
+| GET | `/posts/:id` | Obtém uma postagem pelo UUID. |
+| POST | `/posts` | Cria uma postagem. |
+| PUT | `/posts/:id` | Atualiza uma postagem. |
+| DELETE | `/posts/:id` | Exclui uma postagem. |
+
+Exemplo de criação/edição:
+
+```json
+{
+  "titulo": "Aula de matemática",
+  "conteudo": "Conteúdo da aula.",
+  "usuario_id": 1
+}
+```
+
+`usuario_id` representa o autor/docente da postagem e deve apontar para um
+usuário existente.
+
+## API de usuários
+
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| POST | `/user` | Cria um usuário. |
+| GET | `/user?page=1&limit=10` | Lista usuários. |
+| GET | `/user/:id` | Obtém um usuário. |
+| PUT | `/user/:id` | Atualiza um usuário. |
+| DELETE | `/user/:id` | Exclui um usuário. |
 
 ## Testes
 
-Os testes unitários usam Jest e cobrem os casos de uso de criação, edição e
-exclusão de postagens. Para executar os testes com relatório de cobertura:
+Os testes unitários cobrem os casos críticos de criação, edição e exclusão de
+postagens. Execute:
 
 ```bash
+npm test
 npm run test:coverage
 ```
 
-O projeto exige pelo menos 20% de cobertura em linhas, instruções, funções e
-branches; o comando falha se esse limite não for atingido.
+O Jest exige ao menos 20% de cobertura em linhas, instruções, funções e
+branches. A cobertura atual dos casos de uso de postagens testados é 100%.
 
-## CI/CD com GitHub Actions
+## Docker
 
-O workflow em `.github/workflows/ci-cd.yml` valida o projeto em pull requests
-e pushes para a branch `main`. Em pushes para `main`, ele também publica a
-imagem no Docker Hub.
+### Desenvolvimento
 
-Antes do primeiro deploy, configure estes *Actions secrets* no repositório do
-GitHub:
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
 
-- `DOCKERHUB_USERNAME`: usuário do Docker Hub.
-- `DOCKERHUB_TOKEN`: token de acesso do Docker Hub com permissão de escrita.
+O código local é montado no contêiner e o `tsx watch` reinicia a API ao salvar
+arquivos.
 
-## Executando com Docker
-
-Com o Docker em execução, inicie a API com:
+### Produção
 
 ```bash
 docker compose up --build
 ```
 
-A API ficará disponível em `http://localhost:3000`. As credenciais do banco
-são carregadas do arquivo `.env`; ele deve apontar para o PostgreSQL hospedado
-no Supabase e não é incluído na imagem Docker.
+Os dois Compose carregam as variáveis do `.env` e usam o PostgreSQL hospedado.
 
-Para encerrar o contêiner, use:
+## Integração contínua e imagem Docker
 
-```bash
-docker compose down
-```
+O workflow em `.github/workflows/main.yml` executa em pull requests e pushes
+para `main`. Ele instala dependências, executa testes com cobertura e faz o
+build TypeScript. Em pushes para `main`, publica a imagem no Docker Hub com as
+tags `latest` e o hash do commit.
 
-Em desenvolvimento, o TypeORM cria e atualiza as tabelas a partir das
-entidades. Em produção, o ideal é substituir essa sincronização por migrations
-versionadas antes de executar a aplicação.
+Configure estes secrets no GitHub:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+O deploy no Render usa a imagem publicada e as variáveis do banco cadastradas
+no painel da plataforma.
+
+## Roteiro do vídeo
+
+Consulte [docs/roteiro-video.md](docs/roteiro-video.md).
