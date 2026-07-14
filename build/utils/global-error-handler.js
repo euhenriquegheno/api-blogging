@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.globalErrorHandler = exports.errorHandlerMap = void 0;
 const zod_1 = require("zod");
-const env_1 = require("../env");
 exports.errorHandlerMap = {
     ZodError: (error, _, reply) => {
         return reply.status(400).send({
@@ -18,9 +17,7 @@ exports.errorHandlerMap = {
     },
 };
 const globalErrorHandler = (error, _, reply) => {
-    if (env_1.env.NODE_ENV !== 'production') {
-        console.error(error);
-    }
+    console.error(error);
     const handler = exports.errorHandlerMap[error.constructor.name];
     if (handler) {
         return handler(error, _, reply);

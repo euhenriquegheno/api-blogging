@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
-import { env } from '../env'
 
 interface ErrorHandlerMap {
   [key: string]: (
@@ -30,9 +29,7 @@ export const globalErrorHandler = (
   _: FastifyRequest,
   reply: FastifyReply,
 ) => {
-  if (env.NODE_ENV !== 'production') {
-    console.error(error)
-  }
+  console.error(error)
 
   const handler = errorHandlerMap[error.constructor.name]
 
