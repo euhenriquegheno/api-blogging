@@ -1,1 +1,1 @@
-{"version":3,"file":"routes.d.ts","sourceRoot":"","sources":["../../../../src/http/controllers/publicacao/routes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,SAAS,CAAA;AAYzC,wBAAsB,gBAAgB,CAAC,GAAG,EAAE,eAAe,iBA6E1D"}
+{"version":3,"file":"routes.d.ts","sourceRoot":"","sources":["../../../../src/http/controllers/publicacao/routes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,SAAS,CAAA;AASzC,wBAAsB,gBAAgB,CAAC,GAAG,EAAE,eAAe,iBA6E1D"}

@@ -5,10 +5,7 @@ import { findAllPublicacao } from './find-all'
 import { deletePublicacao } from './delete'
 import { update } from './update'
 import { searchPublicacoes } from './search'
-import {
-  publicacaoBodySchema,
-  publicacaoSchema,
-} from '../../swagger-schemas'
+import { publicacaoBodySchema, publicacaoSchema } from '../../swagger-schemas'
 
 export async function publicacaoRoutes(app: FastifyInstance) {
   app.get('/posts/search', {

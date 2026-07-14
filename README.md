@@ -144,6 +144,22 @@ Configure estes secrets no GitHub:
 O deploy no Render usa a imagem publicada e as variáveis do banco cadastradas
 no painel da plataforma.
 
-## Roteiro do vídeo
+## Experiências e desafios
 
-Consulte [docs/roteiro-video.md](docs/roteiro-video.md).
+O projeto foi desenvolvido individualmente. Os principais desafios encontrados
+durante o desenvolvimento foram a conexão com o PostgreSQL hospedado no
+Supabase e a configuração do Docker.
+
+No Supabase, foi necessário identificar a URL e as credenciais de conexão
+adequadas para a aplicação e utilizar o **Session pooler**, que permite a
+conexão por redes IPv4. A configuração dessas informações por variáveis de
+ambiente também foi importante para não expor dados sensíveis no repositório.
+
+Na containerização, o desafio foi manter configurações apropriadas tanto para
+o desenvolvimento quanto para a produção. Por isso, foram definidos serviços
+Docker Compose separados: no desenvolvimento, o código é montado como volume e
+a API é reiniciada automaticamente; em produção, a imagem é gerada em etapas
+e executa apenas os arquivos compilados.
+
+## Vídeo
+https://youtu.be/fM_zS2ILz18
