@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appDataSource = void 0;
+exports.initializeDataSource = initializeDataSource;
 const typeorm_1 = require("typeorm");
 const env_1 = require("../../env");
 const usuario_entity_1 = require("../../entities/usuario.entity");
@@ -16,12 +17,10 @@ exports.appDataSource = new typeorm_1.DataSource({
     synchronize: env_1.env.NODE_ENV === 'development',
     entities: [usuario_entity_1.Usuario, publicacao_entity_1.Publicacao],
 });
-exports.appDataSource
-    .initialize()
-    .then(() => {
-    console.log('Database with typeorm connected!');
-})
-    .catch((err) => {
-    console.error('Error during Data Source initialization', err);
-});
+async function initializeDataSource() {
+    if (!exports.appDataSource.isInitialized) {
+        await exports.appDataSource.initialize();
+        console.log('Database with typeorm connected!');
+    }
+}
 //# sourceMappingURL=typeorm.js.map

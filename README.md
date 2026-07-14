@@ -26,20 +26,21 @@ GitHub:
 
 ## Executando com Docker
 
-Com o Docker em execução, inicie a API e o banco de dados com:
+Com o Docker em execução, inicie a API com:
 
 ```bash
 docker compose up --build
 ```
 
-A API ficará disponível em `http://localhost:3000`. No Compose, o banco é
-acessado pela API usando o hostname `postgres`, que é o nome do serviço Docker.
-Ele não é exposto ao computador host, evitando conflito com um PostgreSQL já
-em execução na porta `5432`.
+A API ficará disponível em `http://localhost:3000`. As credenciais do banco
+são carregadas do arquivo `.env`; ele deve apontar para o PostgreSQL hospedado
+no Supabase e não é incluído na imagem Docker.
 
-Para encerrar os contêineres, use `docker compose down`. Os dados do banco
-permanecem no volume `postgres_data`; para removê-los também, execute
-`docker compose down -v`.
+Para encerrar o contêiner, use:
+
+```bash
+docker compose down
+```
 
 Em desenvolvimento, o TypeORM cria e atualiza as tabelas a partir das
 entidades. Em produção, o ideal é substituir essa sincronização por migrations
