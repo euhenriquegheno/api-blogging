@@ -31,10 +31,11 @@ HTTP routes/controllers -> use cases -> repositories -> TypeORM/PostgreSQL
 Instale as dependências:
 
 ```bash
+cd backend
 npm ci
 ```
 
-Copie `.env.example` para `.env` e preencha as variáveis de conexão do banco:
+Copie `.env.example` para `.env` (dentro de `backend/`) e preencha as variáveis de conexão do banco:
 
 ```env
 NODE_ENV=development
@@ -100,7 +101,7 @@ usuário existente.
 ## Testes
 
 Os testes unitários cobrem os casos críticos de criação, edição e exclusão de
-postagens. Execute:
+postagens. Execute (dentro de `backend/`):
 
 ```bash
 npm test
