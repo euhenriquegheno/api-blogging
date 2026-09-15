@@ -1,110 +1,187 @@
-# API Blogging Educacional
+# API Blogging
 
-API REST para gerenciamento de usuários e postagens educacionais. O servidor é desenvolvido em Node.js com TypeScript e Fastify, utiliza PostgreSQL com TypeORM e pode ser distribuído como uma imagem Docker.
+Blog institucional onde professores publicam materiais para a comunidade
+acadêmica. O projeto é composto por uma API REST (Fastify + TypeORM + MySQL)
+e uma interface React consumida por três perfis de usuário: Administrador,
+Professor e Aluno.
 
 ## Tecnologias
 
-- Node.js 22 e TypeScript
-- Fastify para servidor, rotas e tratamento de erros
-- PostgreSQL e TypeORM para persistência
-- Zod para validação das requisições
-- Jest e ts-jest para testes unitários e cobertura
-- Docker e GitHub Actions
-
-## Configuração inicial
-
-Requisitos: Node.js 22 ou superior, npm e uma instância PostgreSQL acessível.
-
-1. Instale as dependências:
-
-   ```bash
-   npm install
-   ```
-
-2. Copie `.env.example` para `.env` e preencha:
-
-   ```env
-   NODE_ENV=development
-   PORT=3000
-   DATABASE_USER=postgres
-   DATABASE_HOST=localhost
-   DATABASE_NAME=api_blogging
-   DATABASE_PASSWORD=sua_senha
-   DATABASE_PORT=5432
-   ```
-
-3. Inicie a API em desenvolvimento:
-
-   ```bash
-   npm run start:dev
-   ```
+- **Backend**: Node.js, TypeScript, Fastify, TypeORM, MySQL, `@fastify/jwt`,
+  bcrypt, Zod, Jest
+- **Frontend**: React + Vite, TypeScript, React Router, Tailwind CSS, `fetch`
+  nativo, Vitest + Testing Library
+- **Infraestrutura**: Docker / Docker Compose (dev e produção), GitHub Actions
+  (CI + publicação das imagens no Docker Hub)
 
 ## Arquitetura
 
-O projeto separa as responsabilidades em camadas:
+```text
+Backend:  HTTP routes/controllers -> use cases -> repositories -> TypeORM/MySQL
+Frontend: pages -> features (api/components/context) -> services/api-client -> Backend
+```
 
-- `src/http/controllers`: validação HTTP, rotas, requisições e respostas.
-- `src/uses-cases`: regras de negócio independentes do framework HTTP.
-- `src/repositories`: contratos e implementação da persistência com TypeORM.
-- `src/entities`: entidades e modelos de domínio.
-- `src/lib`: configuração da infraestrutura, incluindo o banco de dados.
-- `src/utils`: tratamento global de erros.
+- **Controllers** validam requisições com Zod e formam respostas HTTP.
+- **Use cases** concentram as regras de negócio (autenticação, autorização,
+  CRUD de posts/usuários, comentários).
+- **Repositories** isolam consultas e gravações no MySQL via TypeORM.
+- **Entities**: `usuario` (com o campo `tipo`: Administrador/Professor/Aluno),
+  `publicacao` e `comentario`, relacionadas entre si.
+- **Frontend** organizado por *features* (`auth`, `posts`), com contexto de
+  sessão (`AuthProvider`), guarda de rotas (`ProtectedRoute`) e um roteador
+  central em `src/app/config/router.tsx`.
 
-O fluxo de uma requisição é: rota → controller → caso de uso → repositório → PostgreSQL.
+Detalhes de arquitetura, decisões de projeto e relato de desafios estão em
+[`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md).
+
+## Perfis de usuário e permissões
+
+| Ação | Visitante | Aluno | Professor | Administrador |
+|------|:---:|:---:|:---:|:---:|
+| Listar/ler posts | ✅ | ✅ | ✅ | ✅ |
+| Comentar em um post | ❌ | ✅ | ✅ | ✅ |
+| Criar/editar os próprios posts | ❌ | ❌ | ✅ | ✅ |
+| Editar/excluir qualquer post | ❌ | ❌ | ❌ | ✅ |
+| Criar contas de usuário | ❌ | ❌ | ❌ | ✅ |
+
+Autenticação via `POST /login`, com JWT válido por 24 horas. Não há
+self-signup: contas são criadas apenas pelo Administrador.
+
+## Configuração local (sem Docker)
+
+**Backend**
+
+```bash
+cd backend
+npm ci
+cp .env.example .env        # preencher DATABASE_*, JWT_SECRET (MySQL local ou via docker compose up -d db)
+npm run start:dev           # API em http://localhost:3000, docs em /docs
+```
+
+**Frontend**
+
+```bash
+cd frontend
+npm ci
+cp .env.example .env        # VITE_API_URL=http://localhost:3000
+npm run dev                 # Vite dev server em http://localhost:5173
+```
+
+## Rodando com Docker
+
+Copie o `.env.example` da raiz para `.env` e preencha as credenciais do MySQL
+e a `VITE_API_URL` antes de subir os containers. O arquivo `backend/.env`
+(a partir de `backend/.env.example`) também é necessário, pois é consumido
+diretamente pelo container da API.
+
+**Desenvolvimento** (hot reload no backend e no frontend):
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+- API: `http://localhost:3000` (docs em `/docs`)
+- Frontend: `http://localhost:5173`
+- MySQL: `localhost:3306`
+
+**Produção** (build otimizado, frontend servido por Nginx, com MySQL local):
+
+```bash
+docker compose up --build
+```
+
+- API: `http://localhost:3000`
+- Frontend: `http://localhost:8080`
+
+**Produção com banco de dados externo** (ex.: MySQL gerenciado na AWS RDS,
+Supabase etc.) — sem subir banco local:
+
+```bash
+docker compose -f docker-compose.external-db.yml up --build
+```
+
+Preencha `backend/.env` com os dados de conexão do banco externo
+(`DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`,
+`DATABASE_NAME`, `JWT_SECRET`) e garanta que o banco esteja acessível a
+partir de onde os containers rodam (ex.: liberar a porta 3306 no Security
+Group da RDS apenas para a origem do backend). Como `synchronize` só é
+`true` em `NODE_ENV=development`, as tabelas não são criadas
+automaticamente em produção: rode a API **uma vez** com
+`NODE_ENV=development` apontada para o banco externo para criar o schema
+via TypeORM, depois volte para `NODE_ENV=production`.
+
+## Swagger
+
+Com a API em execução, abra `http://localhost:3000/docs` para consultar e
+testar interativamente os endpoints documentados.
 
 ## API de postagens
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| GET | `/posts?page=1&limit=10` | Lista postagens com paginação |
-| GET | `/posts/:id` | Retorna uma postagem pelo UUID |
-| GET | `/posts/search?q=node` | Busca no título ou conteúdo |
-| POST | `/posts` | Cria uma postagem |
-| PUT | `/posts/:id` | Atualiza uma postagem |
-| DELETE | `/posts/:id` | Exclui uma postagem |
+| Método | Rota | Autenticação | Descrição |
+| --- | --- | --- | --- |
+| GET | `/posts?page=1&limit=10` | pública | Lista postagens paginadas. |
+| GET | `/posts/search?q=termo` | pública | Busca no título ou conteúdo. |
+| GET | `/posts/:id` | pública | Obtém uma postagem pelo UUID. |
+| POST | `/posts` | Professor/Administrador | Cria uma postagem. |
+| PUT | `/posts/:id` | Professor (próprio post) / Administrador | Atualiza uma postagem. |
+| DELETE | `/posts/:id` | Professor (próprio post) / Administrador | Exclui uma postagem. |
 
-Corpo para criação e atualização:
+## API de comentários
 
-```json
-{
-  "titulo": "Introdução ao Node.js",
-  "conteudo": "Conteúdo completo da postagem",
-  "usuario_id": 1
-}
-```
-
-Uma criação bem-sucedida retorna `201`; consultas e atualizações retornam `200`; exclusões retornam `204`. Dados inválidos retornam `400` e recursos inexistentes retornam `404`.
+| Método | Rota | Autenticação | Descrição |
+| --- | --- | --- | --- |
+| GET | `/posts/:id/comments?page=1&limit=10` | pública | Lista comentários de um post. |
+| POST | `/posts/:id/comments` | qualquer usuário autenticado | Cria um comentário no post. |
 
 ## API de usuários
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| GET | `/usuario?page=1&limit=10` | Lista usuários |
-| GET | `/usuario/:id` | Retorna um usuário |
-| POST | `/usuario` | Cria um usuário |
-| PUT | `/usuario/:id` | Atualiza um usuário |
-| DELETE | `/usuario/:id` | Exclui um usuário |
+| Método | Rota | Autenticação | Descrição |
+| --- | --- | --- | --- |
+| POST | `/login` | pública | Autentica e retorna um JWT válido por 24h. |
+| POST | `/user` | Administrador | Cria um usuário (`tipo`: Administrador/Professor/Aluno). |
+| GET | `/user?page=1&limit=10` | Administrador | Lista usuários. |
+| GET | `/user/:id` | Administrador | Obtém um usuário. |
+| PUT | `/user/:id` | Administrador | Atualiza um usuário. |
+| DELETE | `/user/:id` | Administrador | Exclui um usuário. |
 
-## Testes e cobertura
+## Testes
+
+**Backend** (dentro de `backend/`):
 
 ```bash
 npm test
 npm run test:coverage
 ```
 
-Os testes unitários usam Jest e um repositório em memória. Eles cobrem os casos críticos de criação, edição e exclusão, além de consulta, listagem e busca. O comando de cobertura falha se qualquer métrica global configurada ficar abaixo de 20%.
+Cobertura mínima exigida: 20% em linhas, instruções, funções e branches
+(`backend/jest.config.js`).
 
-## Docker
-
-Para criar a imagem da API:
+**Frontend** (dentro de `frontend/`):
 
 ```bash
-docker build -t api-blogging .
-docker run --env-file .env -p 3000:3000 api-blogging
+npm run test
 ```
 
-Quando a API e o PostgreSQL estiverem na mesma rede Docker, use o nome do contêiner ou serviço do PostgreSQL em `DATABASE_HOST`, e não `localhost`.
+## Integração contínua e imagens Docker
 
-## CI/CD
+O workflow em `.github/workflows/main.yml` roda em pull requests e pushes
+para `main`:
 
-O workflow `.github/workflows/ci-cd.yml` executa compilação, testes e validação da cobertura em pushes e pull requests para `main`. Após um push aprovado em `main`, ele constrói e publica a imagem em `ghcr.io/<proprietário>/<repositório>`, cumprindo a etapa de entrega automatizada. A implantação em um servidor específico pode consumir essa imagem e exige as credenciais da plataforma escolhida.
+1. `validate-backend`: instala dependências, roda os testes com cobertura e
+   builda o backend.
+2. `validate-frontend`: instala dependências, roda os testes e builda o
+   frontend.
+3. `publish-image` (somente em push para `main`, após os dois anteriores
+   passarem): publica no Docker Hub as imagens `api-blogging` (backend) e
+   `api-blogging-frontend` (frontend), com as tags `latest` e o hash do
+   commit.
+
+Configure estes secrets no GitHub:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+## Documentação complementar
+
+- [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) — arquitetura, guia de uso e
+  relato de experiências/desafios.
