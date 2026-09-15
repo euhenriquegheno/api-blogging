@@ -6,6 +6,14 @@ import { deletePublicacao } from './delete'
 import { update } from './update'
 import { searchPublicacoes } from './search'
 import { publicacaoBodySchema, publicacaoSchema } from '../../swagger-schemas'
+import { verifyJwt } from '../../middlewares/verify-jwt'
+import { verifyUserType } from '../../middlewares/verify-user-type'
+import { TipoUsuario } from '../../../entities/models/tipo-usuario.enum'
+
+const somenteProfessorOuAdministrador = [
+  verifyJwt,
+  verifyUserType([TipoUsuario.PROFESSOR, TipoUsuario.ADMINISTRADOR]),
+]
 
 export async function publicacaoRoutes(app: FastifyInstance) {
   app.get('/posts/search', {
@@ -50,6 +58,7 @@ export async function publicacaoRoutes(app: FastifyInstance) {
   }, findPublicacao)
 
   app.post('/posts', {
+    preHandler: somenteProfessorOuAdministrador,
     schema: {
       tags: ['Posts'],
       summary: 'Cria uma postagem',
@@ -59,6 +68,7 @@ export async function publicacaoRoutes(app: FastifyInstance) {
   }, create)
 
   app.put('/posts/:id', {
+    preHandler: somenteProfessorOuAdministrador,
     schema: {
       tags: ['Posts'],
       summary: 'Edita uma postagem',
@@ -73,6 +83,7 @@ export async function publicacaoRoutes(app: FastifyInstance) {
   }, update)
 
   app.delete('/posts/:id', {
+    preHandler: somenteProfessorOuAdministrador,
     schema: {
       tags: ['Posts'],
       summary: 'Exclui uma postagem',
