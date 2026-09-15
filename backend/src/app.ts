@@ -5,7 +5,6 @@ import swaggerUi from '@fastify/swagger-ui'
 import { usuarioRoutes } from './http/controllers/usuario/routes'
 import { publicacaoRoutes } from './http/controllers/publicacao/routes'
 import { authRoutes } from './http/controllers/auth/routes'
-import { comentarioRoutes } from './http/controllers/comentario/routes'
 import { globalErrorHandler } from './utils/global-error-handler'
 import { env } from './env'
 
@@ -26,7 +25,6 @@ app.register(swagger, {
       { name: 'Posts', description: 'Operações com postagens' },
       { name: 'Usuários', description: 'Operações com docentes e usuários' },
       { name: 'Autenticação', description: 'Login e emissão de tokens JWT' },
-      { name: 'Comentários', description: 'Operações com comentários em postagens' },
     ],
   },
 })
@@ -34,7 +32,6 @@ app.register(swagger, {
 app.register(usuarioRoutes)
 app.register(publicacaoRoutes)
 app.register(authRoutes)
-app.register(comentarioRoutes)
 
 app.register(swaggerUi, {
   routePrefix: '/docs',

@@ -54,37 +54,6 @@ export const loginResponseSchema = {
   },
 }
 
-export const comentarioBodySchema = {
-  type: 'object',
-  required: ['conteudo'],
-  properties: {
-    conteudo: { type: 'string', minLength: 1 },
-  },
-}
-
-export const comentarioSchema = {
-  type: 'object',
-  properties: {
-    id: { type: 'string', description: 'UUID do comentário' },
-    conteudo: { type: 'string' },
-    criadoEm: { type: 'string', format: 'date-time' },
-    usuario: {
-      type: 'object',
-      properties: {
-        id: { type: 'number' },
-        nome: { type: 'string' },
-        email: { type: 'string' },
-      },
-    },
-    publicacao: {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-      },
-    },
-  },
-}
-
 export const usuarioBodySchema = {
   type: 'object',
   required: ['email', 'senha', 'nome', 'cpf', 'tipo'],
