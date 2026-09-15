@@ -135,9 +135,16 @@ docker compose -f docker-compose.dev.yml up --build
   e cria novas contas de usuário definindo o `tipo` (Administrador,
   Professor ou Aluno).
 
-Como não há self-signup, o primeiro usuário Administrador precisa ser
-criado diretamente via `POST /user` (por exemplo, pelo Swagger em `/docs`)
-antes de qualquer conta poder ser criada pela interface.
+Como não há self-signup **e** todas as rotas de `/user` exigem um
+Administrador já autenticado, um banco novo não tem nenhuma conta — não dá
+para criar o primeiro Administrador pelo Swagger nem pela interface. Por
+isso existe o script `backend/src/scripts/seed-admin.ts`
+(`npm run seed:admin` local, ou `docker compose exec api node
+build/scripts/seed-admin.js` em qualquer um dos composes), que cria um
+Administrador padrão (`admin@blog.com` / `admin123`, customizável por
+variáveis de ambiente) caso nenhum usuário exista ainda. Veja o
+[`README.md`](../README.md#primeiro-acesso-criar-o-administrador-inicial)
+para o passo a passo completo.
 
 ## 4. Testes e integração contínua
 
@@ -195,3 +202,13 @@ trouxe alguns desafios específicos:
   nativo, os testes de página precisaram mockar consistentemente as
   chamadas HTTP para isolar o comportamento da interface do
   comportamento real da API, mantendo os testes rápidos e determinísticos.
+- **Bootstrap do primeiro Administrador**: como não há self-signup e as
+  rotas de `/user` exigem um Administrador autenticado, um banco novo
+  fica sem nenhuma forma de criar a primeira conta — um problema clássico
+  de "ovo e galinha" da autorização. Esse gap só apareceu ao simular a
+  entrega do zero (clonar o repositório, subir os containers e tentar
+  logar), o que reforçou a importância de testar o fluxo completo a
+  partir de um ambiente limpo, não só incrementalmente durante o
+  desenvolvimento. A solução foi um script de seed idempotente
+  (`backend/src/scripts/seed-admin.ts`) que cria um Administrador padrão
+  apenas se nenhum usuário existir ainda.
