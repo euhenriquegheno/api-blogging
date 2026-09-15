@@ -1,7 +1,7 @@
 ---
 description: Use para a migração do banco de dados de PostgreSQL para MySQL — troca do driver TypeORM (Task 1.1 do PLAN.md) e adição do serviço MySQL ao Docker Compose (Task 1.2 do PLAN.md). Não usar para lógica de negócio, entidades de domínio ou rotas.
 mode: subagent
-model: anthropic/claude-haiku-4-5-20251001
+model: minimax/MiniMax-M3
 tools:
   read: true
   edit: true

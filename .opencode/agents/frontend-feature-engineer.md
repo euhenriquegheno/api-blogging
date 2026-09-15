@@ -1,7 +1,7 @@
 ---
 description: Use para implementar as features do frontend que consomem a API — autenticação (contexto, guarda de rotas, login), posts (listagem, busca, leitura, criação, edição) e comentários (listagem, envio), além da área administrativa (gestão de posts e criação de contas). Cobre as Fases 8 a 13 do PLAN.md. Não usar para o bootstrap inicial do projeto nem para o layout compartilhado/responsivo.
 mode: subagent
-model: anthropic/claude-sonnet-5
+model: minimax/MiniMax-M3
 tools:
   read: true
   write: true
