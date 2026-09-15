@@ -24,18 +24,14 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
-        working-directory: backend
         run: npm ci
 
       - name: Run tests
-        working-directory: backend
         run: npm run test:coverage
 
       - name: Build application
-        working-directory: backend
         run: npm run build
 
   publish-image:
@@ -57,7 +53,7 @@ jobs:
       - name: Build and publish Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./backend
+          context: .
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/api-blogging:latest

@@ -2,27 +2,27 @@
 
 # PLAN.md
 
-## Sprint 1 — API completa (MySQL + autenticação JWT + comentários) passa em `cd backend && npm run test:coverage` e sobe conectada a um MySQL via `docker compose up -d`
+## Sprint 1 — API completa (MySQL + autenticação JWT + comentários) passa em `npm run test:coverage` e sobe conectada a um MySQL via `docker compose up -d`
 
 ### Fase 1 — Backend: Migração de banco (MySQL)
 > Dependências: nenhuma
 > Paralelismo: Task 1.1 e Task 1.2 rodam em paralelo (arquivos distintos)
-> Critério: `docker compose config` valida os arquivos, `docker compose up -d db` sobe o MySQL saudável, e `cd backend && npm run build` conclui sem qualquer referência ao pacote `pg`
+> Critério: `docker compose config` valida os arquivos, `docker compose up -d db` sobe o MySQL saudável, e `npm run build` conclui sem qualquer referência ao pacote `pg`
 
 #### Task 1.1 — Trocar driver TypeORM de PostgreSQL para MySQL
 - Agent: Backend Engineer (TypeORM/Fastify)
-- Input: `backend/src/lib/typeorm/typeorm.ts` (atualmente `type: 'postgres'`), `backend/package.json` com `pg`/`@types/pg`, `backend/.env.example`
+- Input: `src/lib/typeorm/typeorm.ts` (atualmente `type: 'postgres'`), `package.json` com `pg`/`@types/pg`, `.env.example`
 - Output:
-  - `backend/src/lib/typeorm/typeorm.ts` com `type: 'mysql'`, mantendo `host`, `port`, `username`, `password`, `database`, `entities`, `synchronize`, `logging`
-  - `backend/package.json` sem `pg` e `@types/pg`, com `mysql2` como dependency
-  - `backend/.env.example` com `DATABASE_PORT=3306` como valor de exemplo
+  - `src/lib/typeorm/typeorm.ts` com `type: 'mysql'`, mantendo `host`, `port`, `username`, `password`, `database`, `entities`, `synchronize`, `logging`
+  - `package.json` sem `pg` e `@types/pg`, com `mysql2` como dependency
+  - `.env.example` com `DATABASE_PORT=3306` como valor de exemplo
 - Testes críticos:
   - [ ] `appDataSource.options.type` é igual a `'mysql'` (teste unitário lendo a configuração exportada, sem exigir conexão real)
   - [ ] `npm ls pg` falha com "not found" após `npm ci` (nenhuma dependência de `pg` restante)
 
 #### Task 1.2 — Adicionar serviço MySQL ao Docker Compose
 - Agent: DevOps
-- Input: `docker-compose.yml` e `docker-compose.dev.yml` (somente serviço `api`), `backend/.env.example`
+- Input: `docker-compose.yml` e `docker-compose.dev.yml` (somente serviço `api`), `.env.example`
 - Output:
   - `docker-compose.yml` e `docker-compose.dev.yml` com serviço `db` (imagem `mysql:8`), variáveis `MYSQL_DATABASE`/`MYSQL_USER`/`MYSQL_PASSWORD`/`MYSQL_ROOT_PASSWORD` lidas de `.env`, volume nomeado `mysql_data:/var/lib/mysql`, `healthcheck` via `mysqladmin ping`
   - serviço `api` com `depends_on: { db: { condition: service_healthy } }`
@@ -33,16 +33,16 @@
 ### Fase 2 — Backend: Fundamentos de autenticação
 > Dependências: nenhuma
 > Paralelismo: Task 2.1, Task 2.2 e Task 2.3 rodam em paralelo (arquivos distintos)
-> Critério: `cd backend && npm run build && npm test` passa, incluindo os novos testes de `TipoUsuario`, `AuthenticateUseCase` e dos middlewares de JWT
+> Critério: `npm run build && npm test` passa, incluindo os novos testes de `TipoUsuario`, `AuthenticateUseCase` e dos middlewares de JWT
 
 #### Task 2.1 — Enum `TipoUsuario` e atualização da entidade `Usuario`
 - Agent: Backend Engineer (domínio)
-- Input: `backend/src/entities/usuario.entity.ts` e `backend/src/entities/models/usuario.interface.ts` (campo `tipo: number` sem semântica definida)
+- Input: `src/entities/usuario.entity.ts` e `src/entities/models/usuario.interface.ts` (campo `tipo: number` sem semântica definida)
 - Output:
-  - `backend/src/entities/models/tipo-usuario.enum.ts`: `export enum TipoUsuario { ADMINISTRADOR = 1, PROFESSOR = 2, ALUNO = 3 }`
-  - `backend/src/entities/models/usuario.interface.ts` com `tipo: TipoUsuario`
-  - `backend/src/entities/usuario.entity.ts` com a coluna `tipo` tipada como `TipoUsuario`
-  - `backend/src/http/swagger-schemas.ts`: `usuarioBodySchema.tipo` validado via Zod (`z.nativeEnum` equivalente) contra os valores do enum
+  - `src/entities/models/tipo-usuario.enum.ts`: `export enum TipoUsuario { ADMINISTRADOR = 1, PROFESSOR = 2, ALUNO = 3 }`
+  - `src/entities/models/usuario.interface.ts` com `tipo: TipoUsuario`
+  - `src/entities/usuario.entity.ts` com a coluna `tipo` tipada como `TipoUsuario`
+  - `src/http/swagger-schemas.ts`: `usuarioBodySchema.tipo` validado via Zod (`z.nativeEnum` equivalente) contra os valores do enum
 - Testes críticos:
   - [ ] `TipoUsuario.ADMINISTRADOR`, `TipoUsuario.PROFESSOR` e `TipoUsuario.ALUNO` existem com valores numéricos distintos entre 1 e 3
   - [ ] `POST /user` com `tipo: 99` (fora do enum) retorna 400 de validação
@@ -51,24 +51,24 @@
 - Agent: Backend Engineer (regras de negócio)
 - Input: `IUsuarioRepository` existente, `InvalidCredentialsError` existente, `bcrypt` já instalado
 - Output:
-  - `backend/src/repositories/usuario.repository.interface.ts` com `findByEmail(email: string): Promise<IUsuario | null>`
-  - `backend/src/repositories/typeorm/usuario.repository.ts` implementando `findByEmail`
-  - `backend/src/uses-cases/authenticate.ts`: `AuthenticateUseCase.handler(email: string, senha: string): Promise<IUsuario>`, busca por e-mail, compara com `bcrypt.compare` e lança `InvalidCredentialsError` em caso de falha
-  - `backend/src/uses-cases/factory/make-authenticate-use-case.ts`
-  - `backend/tests/usuario-use-cases.spec.js` com `InMemoryUsuarioRepository` (mesmo padrão de `backend/tests/publicacao-use-cases.spec.js`)
+  - `src/repositories/usuario.repository.interface.ts` com `findByEmail(email: string): Promise<IUsuario | null>`
+  - `src/repositories/typeorm/usuario.repository.ts` implementando `findByEmail`
+  - `src/uses-cases/authenticate.ts`: `AuthenticateUseCase.handler(email: string, senha: string): Promise<IUsuario>`, busca por e-mail, compara com `bcrypt.compare` e lança `InvalidCredentialsError` em caso de falha
+  - `src/uses-cases/factory/make-authenticate-use-case.ts`
+  - `tests/usuario-use-cases.spec.js` com `InMemoryUsuarioRepository` (mesmo padrão de `tests/publicacao-use-cases.spec.js`)
 - Testes críticos:
   - [ ] `AuthenticateUseCase.handler` retorna o usuário quando o e-mail existe e a senha em texto puro confere com o hash bcrypt armazenado
   - [ ] `AuthenticateUseCase.handler` rejeita com `InvalidCredentialsError` quando o e-mail não existe ou a senha não confere
 
 #### Task 2.3 — Plugin JWT e middlewares de autenticação/autorização
 - Agent: Backend Engineer (infraestrutura HTTP)
-- Input: `backend/src/app.ts` (sem plugin de auth), `backend/src/env/index.ts` atual
+- Input: `src/app.ts` (sem plugin de auth), `src/env/index.ts` atual
 - Output:
-  - `@fastify/jwt` adicionado ao `backend/package.json`
-  - `backend/src/env/index.ts` com `JWT_SECRET: z.string()`; `backend/.env.example` com `JWT_SECRET=`
-  - `backend/src/app.ts` registrando `@fastify/jwt` com `secret: env.JWT_SECRET`
-  - `backend/src/http/middlewares/verify-jwt.ts`: preHandler que chama `request.jwtVerify()` e retorna 401 se ausente/inválido
-  - `backend/src/http/middlewares/verify-user-type.ts`: `verifyUserType(tiposPermitidos: TipoUsuario[])` retornando preHandler que responde 403 se `request.user.tipo` não estiver em `tiposPermitidos`
+  - `@fastify/jwt` adicionado ao `package.json`
+  - `src/env/index.ts` com `JWT_SECRET: z.string()`; `.env.example` com `JWT_SECRET=`
+  - `src/app.ts` registrando `@fastify/jwt` com `secret: env.JWT_SECRET`
+  - `src/http/middlewares/verify-jwt.ts`: preHandler que chama `request.jwtVerify()` e retorna 401 se ausente/inválido
+  - `src/http/middlewares/verify-user-type.ts`: `verifyUserType(tiposPermitidos: TipoUsuario[])` retornando preHandler que responde 403 se `request.user.tipo` não estiver em `tiposPermitidos`
 - Testes críticos:
   - [ ] `app.inject` numa rota protegida por `verifyJwt` sem header `Authorization` retorna 401
   - [ ] `app.inject` com token válido de um usuário `ALUNO` numa rota com `verifyUserType([TipoUsuario.ADMINISTRADOR])` retorna 403
@@ -76,16 +76,16 @@
 ### Fase 3 — Backend: Integração de autenticação nas rotas
 > Dependências: Fase 2
 > Paralelismo: Task 3.1 e Task 3.2 rodam em paralelo (arquivos distintos)
-> Critério: `cd backend && npm run build && npm test` passa e `app.inject` em `POST /login` retorna 401 para credenciais inválidas e 200 com token para credenciais válidas
+> Critério: `npm run build && npm test` passa e `app.inject` em `POST /login` retorna 401 para credenciais inválidas e 200 com token para credenciais válidas
 
 #### Task 3.1 — Rota de login
 - Agent: Backend Engineer (HTTP)
 - Input: `AuthenticateUseCase` e `make-authenticate-use-case` (Fase 2), plugin JWT registrado (Fase 2)
 - Output:
-  - `backend/src/http/controllers/auth/login.ts`: valida body com Zod (`{ email: string; senha: string }`), chama `AuthenticateUseCase`, assina JWT com payload `{ sub: usuario.id, tipo: usuario.tipo }` e `expiresIn: '24h'`, retorna `{ token }`
-  - `backend/src/http/controllers/auth/routes.ts` registrando `POST /login`
-  - `backend/src/http/swagger-schemas.ts` com `loginBodySchema` e `loginResponseSchema`
-  - `backend/src/app.ts` registrando `authRoutes`
+  - `src/http/controllers/auth/login.ts`: valida body com Zod (`{ email: string; senha: string }`), chama `AuthenticateUseCase`, assina JWT com payload `{ sub: usuario.id, tipo: usuario.tipo }` e `expiresIn: '24h'`, retorna `{ token }`
+  - `src/http/controllers/auth/routes.ts` registrando `POST /login`
+  - `src/http/swagger-schemas.ts` com `loginBodySchema` e `loginResponseSchema`
+  - `src/app.ts` registrando `authRoutes`
 - Testes críticos:
   - [ ] `POST /login` com credenciais corretas retorna 200 e um `token` cujo payload decodificado expira 24 horas após a emissão
   - [ ] `POST /login` com credenciais inválidas retorna 401 com `{ message: 'Username or password is incorrect' }`
@@ -94,11 +94,11 @@
 - Agent: Backend Engineer (HTTP/regras de negócio)
 - Input: `verifyJwt`/`verifyUserType` (Fase 2), rotas atuais de `publicacao` e `usuario` (sem proteção)
 - Output:
-  - `backend/src/http/controllers/publicacao/routes.ts`: `POST/PUT/DELETE /posts` com `preHandler: [verifyJwt, verifyUserType([PROFESSOR, ADMINISTRADOR])]`; `GET /posts` e `GET /posts/:id` continuam públicas
-  - `backend/src/http/controllers/usuario/routes.ts`: todas as rotas com `preHandler: [verifyJwt, verifyUserType([ADMINISTRADOR])]`
-  - `backend/src/uses-cases/errors/forbidden-error.ts`: `ForbiddenError`
-  - `backend/src/uses-cases/update-publicacao.ts` e `backend/src/uses-cases/delete-publicacao.ts` recebendo `usuarioLogado: { id: number; tipo: TipoUsuario }` e lançando `ForbiddenError` quando `tipo === PROFESSOR` e `usuario.id !== publicacao.usuario.id`
-  - `backend/src/utils/global-error-handler.ts` com `ForbiddenError -> 403`
+  - `src/http/controllers/publicacao/routes.ts`: `POST/PUT/DELETE /posts` com `preHandler: [verifyJwt, verifyUserType([PROFESSOR, ADMINISTRADOR])]`; `GET /posts` e `GET /posts/:id` continuam públicas
+  - `src/http/controllers/usuario/routes.ts`: todas as rotas com `preHandler: [verifyJwt, verifyUserType([ADMINISTRADOR])]`
+  - `src/uses-cases/errors/forbidden-error.ts`: `ForbiddenError`
+  - `src/uses-cases/update-publicacao.ts` e `src/uses-cases/delete-publicacao.ts` recebendo `usuarioLogado: { id: number; tipo: TipoUsuario }` e lançando `ForbiddenError` quando `tipo === PROFESSOR` e `usuario.id !== publicacao.usuario.id`
+  - `src/utils/global-error-handler.ts` com `ForbiddenError -> 403`
 - Testes críticos:
   - [ ] Um Professor autenticado consegue editar/excluir um post cujo `usuario.id` é o seu próprio ID
   - [ ] Um Professor autenticado recebe 403 ao tentar editar/excluir um post de outro professor, enquanto um Administrador consegue
@@ -106,17 +106,17 @@
 ### Fase 4 — Backend: Modelo de dados de Comentários
 > Dependências: nenhuma
 > Paralelismo: única task nesta fase
-> Critério: `cd backend && npm run build` conclui sem erros e `appDataSource.options.entities` inclui `Comentario`
+> Critério: `npm run build` conclui sem erros e `appDataSource.options.entities` inclui `Comentario`
 
 #### Task 4.1 — Entidade, interface e repositório de `Comentario`
 - Agent: Backend Engineer (TypeORM)
-- Input: `backend/src/entities/publicacao.entity.ts` e `backend/src/entities/usuario.entity.ts` (para relações `ManyToOne`)
+- Input: `src/entities/publicacao.entity.ts` e `src/entities/usuario.entity.ts` (para relações `ManyToOne`)
 - Output:
-  - `backend/src/entities/models/comentario.interface.ts`: `IComentario { id?: string; conteudo: string; criadoEm?: Date; usuario: IUsuario; publicacao: IPublicacao }`
-  - `backend/src/entities/comentario.entity.ts`: `@PrimaryGeneratedColumn('uuid')`, `conteudo` (`text`), `criadoEm` (`@CreateDateColumn`), `@ManyToOne(() => Usuario)`, `@ManyToOne(() => Publicacao)`
-  - `backend/src/repositories/comentario.repository.interface.ts`: `IComentarioRepository { create, findAllByPublicacaoId(publicacaoId, page, limit), delete(id) }`
-  - `backend/src/repositories/typeorm/comentario.repository.ts` implementando a interface
-  - `backend/src/lib/typeorm/typeorm.ts` com `Comentario` adicionado ao array `entities`
+  - `src/entities/models/comentario.interface.ts`: `IComentario { id?: string; conteudo: string; criadoEm?: Date; usuario: IUsuario; publicacao: IPublicacao }`
+  - `src/entities/comentario.entity.ts`: `@PrimaryGeneratedColumn('uuid')`, `conteudo` (`text`), `criadoEm` (`@CreateDateColumn`), `@ManyToOne(() => Usuario)`, `@ManyToOne(() => Publicacao)`
+  - `src/repositories/comentario.repository.interface.ts`: `IComentarioRepository { create, findAllByPublicacaoId(publicacaoId, page, limit), delete(id) }`
+  - `src/repositories/typeorm/comentario.repository.ts` implementando a interface
+  - `src/lib/typeorm/typeorm.ts` com `Comentario` adicionado ao array `entities`
 - Testes críticos:
   - [ ] Instanciar um `Comentario` com `conteudo`, `usuario` e `publicacao` válidos preserva os três campos (teste unitário de construção, sem banco)
   - [ ] `appDataSource.options.entities` contém a classe `Comentario` após a alteração
@@ -124,16 +124,16 @@
 ### Fase 5 — Backend: Casos de uso de Comentários
 > Dependências: Fase 3 (guardas de autorização) e Fase 4 (repositório de `Comentario`)
 > Paralelismo: Task 5.1 e Task 5.2 rodam em paralelo (arquivos distintos)
-> Critério: `cd backend && npm run build && npm test` passa, incluindo `backend/tests/comentario-use-cases.spec.js`
+> Critério: `npm run build && npm test` passa, incluindo `tests/comentario-use-cases.spec.js`
 
 #### Task 5.1 — Caso de uso e controller de criação de comentário
 - Agent: Backend Engineer
 - Input: `IComentarioRepository` (Fase 4), `verifyJwt` (Fase 2)
 - Output:
-  - `backend/src/uses-cases/create-comentario.ts`: `CreateComentarioUseCase.handler(comentario: IComentario): Promise<IComentario>`
-  - `backend/src/uses-cases/factory/make-create-comentario-use-case.ts`
-  - `backend/src/http/controllers/comentario/create.ts`: valida body com Zod (`{ conteudo: string }`), usa `request.user.sub` como autor e `:id` da rota como `publicacaoId`, retorna 201
-  - `backend/tests/comentario-use-cases.spec.js` (parte de criação) com `InMemoryComentarioRepository`
+  - `src/uses-cases/create-comentario.ts`: `CreateComentarioUseCase.handler(comentario: IComentario): Promise<IComentario>`
+  - `src/uses-cases/factory/make-create-comentario-use-case.ts`
+  - `src/http/controllers/comentario/create.ts`: valida body com Zod (`{ conteudo: string }`), usa `request.user.sub` como autor e `:id` da rota como `publicacaoId`, retorna 201
+  - `tests/comentario-use-cases.spec.js` (parte de criação) com `InMemoryComentarioRepository`
 - Testes críticos:
   - [ ] `CreateComentarioUseCase.handler` retorna o comentário criado associado ao `usuario` e à `publicacao` informados
   - [ ] O controller retorna 400 quando `conteudo` é uma string vazia
@@ -142,10 +142,10 @@
 - Agent: Backend Engineer
 - Input: `IComentarioRepository` (Fase 4)
 - Output:
-  - `backend/src/uses-cases/find-all-comentario.ts`: `FindAllComentarioUseCase.handler(publicacaoId: string, page: number, limit: number): Promise<IComentario[]>`
-  - `backend/src/uses-cases/factory/make-find-all-comentario-use-case.ts`
-  - `backend/src/http/controllers/comentario/find-all.ts`: rota pública, aceita `page`/`limit` via querystring
-  - `backend/tests/comentario-use-cases.spec.js` (parte de listagem)
+  - `src/uses-cases/find-all-comentario.ts`: `FindAllComentarioUseCase.handler(publicacaoId: string, page: number, limit: number): Promise<IComentario[]>`
+  - `src/uses-cases/factory/make-find-all-comentario-use-case.ts`
+  - `src/http/controllers/comentario/find-all.ts`: rota pública, aceita `page`/`limit` via querystring
+  - `tests/comentario-use-cases.spec.js` (parte de listagem)
 - Testes críticos:
   - [ ] `FindAllComentarioUseCase.handler` retorna apenas os comentários da `publicacaoId` informada, ordenados por `criadoEm`
   - [ ] `FindAllComentarioUseCase.handler` retorna array vazio para uma publicação sem comentários (não lança erro)
@@ -153,15 +153,15 @@
 ### Fase 6 — Backend: Integração final de Comentários
 > Dependências: Fase 5
 > Paralelismo: única task nesta fase
-> Critério: `cd backend && npm run build && npm test` passa e `GET /docs` lista `POST /posts/:id/comments` e `GET /posts/:id/comments`
+> Critério: `npm run build && npm test` passa e `GET /docs` lista `POST /posts/:id/comments` e `GET /posts/:id/comments`
 
 #### Task 6.1 — Registro das rotas de comentários
 - Agent: Backend Engineer (HTTP)
 - Input: controllers `create.ts` e `find-all.ts` de `comentario` (Fase 5)
 - Output:
-  - `backend/src/http/controllers/comentario/routes.ts`: `POST /posts/:id/comments` (`preHandler: [verifyJwt]`) e `GET /posts/:id/comments` (pública)
-  - `backend/src/http/swagger-schemas.ts` com `comentarioBodySchema` e `comentarioSchema`
-  - `backend/src/app.ts` registrando `comentarioRoutes`
+  - `src/http/controllers/comentario/routes.ts`: `POST /posts/:id/comments` (`preHandler: [verifyJwt]`) e `GET /posts/:id/comments` (pública)
+  - `src/http/swagger-schemas.ts` com `comentarioBodySchema` e `comentarioSchema`
+  - `src/app.ts` registrando `comentarioRoutes`
 - Testes críticos:
   - [ ] `app.inject` em `POST /posts/:id/comments` sem token retorna 401
   - [ ] `app.inject` em `GET /posts/:id/comments` sem token retorna 200 com a lista de comentários

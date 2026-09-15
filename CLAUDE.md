@@ -15,29 +15,23 @@
 ## Estrutura de pastas
 ```
 api-blogging/
-├── backend/                       # Backend (Fastify + TypeORM)
-│   ├── src/
-│   │   ├── entities/                  # Entidades TypeORM (usuario, publicacao)
-│   │   │   └── models/                  # Interfaces/tipos de domínio das entidades
-│   │   ├── env/                       # Validação e tipagem das variáveis de ambiente (Zod)
-│   │   ├── http/
-│   │   │   ├── controllers/             # Controllers HTTP por recurso (publicacao, usuario) + routes.ts
-│   │   │   └── swagger-schemas.ts       # Schemas usados na documentação Swagger
-│   │   ├── lib/
-│   │   │   └── typeorm/                  # Configuração da conexão TypeORM (DataSource)
-│   │   ├── repositories/
-│   │   │   └── typeorm/                   # Implementações dos repositórios com TypeORM
-│   │   ├── uses-cases/                  # Regras de negócio (casos de uso), um arquivo por ação
-│   │   │   ├── errors/                    # Erros de domínio (ex.: credenciais inválidas, recurso não encontrado)
-│   │   │   └── factory/                   # Fábricas que montam use case + repository (injeção de dependência manual)
-│   │   └── utils/                       # Funções utilitárias
-│   ├── tests/                      # Testes unitários (Jest) dos casos de uso do backend
-│   ├── package.json                # Dependências e scripts do backend
-│   ├── tsconfig.json, jest.config.js, .eslintrc.json, .npmrc
-│   ├── .env.example
-│   ├── Dockerfile, .dockerignore
-│   └── build/                      # Build compilado (gitignored)
-├── frontend/                      # Interface React (Vite + TypeScript + Tailwind + Vitest)
+├── src/                          # Código-fonte do backend (Fastify + TypeORM)
+│   ├── entities/                  # Entidades TypeORM (usuario, publicacao)
+│   │   └── models/                  # Interfaces/tipos de domínio das entidades
+│   ├── env/                       # Validação e tipagem das variáveis de ambiente (Zod)
+│   ├── http/
+│   │   ├── controllers/             # Controllers HTTP por recurso (publicacao, usuario) + routes.ts
+│   │   └── swagger-schemas.ts       # Schemas usados na documentação Swagger
+│   ├── lib/
+│   │   └── typeorm/                  # Configuração da conexão TypeORM (DataSource)
+│   ├── repositories/
+│   │   └── typeorm/                   # Implementações dos repositórios com TypeORM
+│   ├── uses-cases/                  # Regras de negócio (casos de uso), um arquivo por ação
+│   │   ├── errors/                    # Erros de domínio (ex.: credenciais inválidas, recurso não encontrado)
+│   │   └── factory/                   # Fábricas que montam use case + repository (injeção de dependência manual)
+│   └── utils/                       # Funções utilitárias
+├── tests/                         # Testes unitários (Jest) dos casos de uso do backend
+├── frontend/                      # Interface React — ainda apenas scaffold de pastas, sem package.json/código
 │   └── src/
 │       ├── app/config/               # Configuração da aplicação
 │       ├── components/               # Componentes compartilhados
@@ -52,7 +46,9 @@ api-blogging/
 │       └── types/                    # Tipos TypeScript
 ├── docs/                          # Documentação do projeto
 ├── .github/                       # Workflows de CI/CD (testes, build, publicação Docker)
-├── docker-compose.yml, docker-compose.dev.yml   # Configuração de containers (dev e produção), apontando para backend/
+├── Dockerfile, docker-compose*.yml   # Configuração de containers (dev e produção)
+├── jest.config.js                 # Configuração do Jest (backend)
+├── package.json                   # Dependências e scripts do backend
 └── SPEC.md                        # Especificação do projeto
 ```
 
@@ -60,18 +56,13 @@ api-blogging/
 
 **Backend**
 ```bash
-cd backend
 npm ci
 cp .env.example .env        # preencher DATABASE_USER, DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT (MySQL, após a migração)
 npm run start:dev           # API em http://localhost:3000, docs em /docs
 ```
 
 **Frontend**
-```bash
-cd frontend
-npm ci
-npm run dev                 # Vite dev server
-```
+- a definir — a pasta `frontend/` existe apenas com a árvore de diretórios planejada (`src/app`, `src/features`, `src/pages`, etc.), sem `package.json`, `vite.config` ou código-fonte ainda criados.
 
 ## Padrões de código
 - Nomenclatura de arquivos: kebab-case, com sufixo indicando o papel do arquivo (`*.entity.ts`, `*.interface.ts`, `*.repository.ts`, `make-*-use-case.ts` nas factories).
@@ -82,9 +73,9 @@ npm run dev                 # Vite dev server
 
 ## TDD
 - Framework backend: Jest
-- Framework frontend: Vitest + Testing Library (`jsdom`)
-- Onde ficam os testes: backend em `backend/tests/*.spec.js` (rodam sobre o build compilado em `backend/build/`); frontend em `frontend/src/test/` e colocados junto aos arquivos testados
-- Regra: cobertura mínima de 20% em linhas, instruções, funções e branches (`backend/jest.config.js`)
+- Framework frontend: a definir (existe a pasta `frontend/src/test`, mas sem configuração de test runner)
+- Onde ficam os testes: backend em `tests/*.spec.js` (rodam sobre o build compilado em `build/`); frontend a definir
+- Regra: cobertura mínima de 20% em linhas, instruções, funções e branches (`jest.config.js`)
 - Testes críticos deste projeto:
   - [ ] Login retorna 401 para credenciais inválidas e um token JWT válido por 24 horas para credenciais corretas.
   - [ ] Rotas de criação, edição e administração redirecionam para login quando não há token válido, e o acesso respeita o campo `tipo` (Administrador/Professor/Aluno).

@@ -1,0 +1,1 @@
+{"version":3,"file":"publicacao.interface.d.ts","sourceRoot":"","sources":["../../../src/entities/models/publicacao.interface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,mBAAmB,CAAA;AAE3C,MAAM,WAAW,WAAW;IAC1B,EAAE,CAAC,EAAE,MAAM,CAAA;IACX,MAAM,EAAE,MAAM,CAAA;IACd,QAAQ,EAAE,MAAM,CAAA;IAChB,OAAO,EAAE,OAAO,CAAA;CACjB"}
