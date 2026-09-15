@@ -1,7 +1,7 @@
 ---
 description: Use para modelagem de domínio no backend — criação/atualização de entidades TypeORM, enums e interfaces (ex. enum TipoUsuario e entidade/interface/repositório Comentario, Fases 2.1 e 4 do PLAN.md). Não usar para rotas HTTP, middlewares ou casos de uso de autenticação.
 mode: subagent
-model: minimax/MiniMax-M3
+model: anthropic/claude-sonnet-5
 tools:
   read: true
   write: true

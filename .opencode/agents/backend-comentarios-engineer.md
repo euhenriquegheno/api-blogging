@@ -1,7 +1,7 @@
 ---
 description: Use para os casos de uso, controllers e rotas de Comentários — criação (Task 5.1), listagem (Task 5.2) e registro das rotas (Task 6.1) do PLAN.md. Depende da entidade Comentario (backend-domain-engineer) e dos middlewares de JWT (backend-auth-engineer) já existirem.
 mode: subagent
-model: minimax/MiniMax-M3
+model: anthropic/claude-sonnet-5
 tools:
   read: true
   write: true

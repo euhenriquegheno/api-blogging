@@ -163,8 +163,8 @@
   - `backend/src/http/swagger-schemas.ts` com `comentarioBodySchema` e `comentarioSchema`
   - `backend/src/app.ts` registrando `comentarioRoutes`
 - Testes críticos:
-  - [x] `app.inject` em `POST /posts/:id/comments` sem token retorna 401
-  - [x] `app.inject` em `GET /posts/:id/comments` sem token retorna 200 com a lista de comentários
+  - [ ] `app.inject` em `POST /posts/:id/comments` sem token retorna 401
+  - [ ] `app.inject` em `GET /posts/:id/comments` sem token retorna 200 com a lista de comentários
 
 ---
 

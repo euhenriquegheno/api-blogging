@@ -1,7 +1,7 @@
 ---
 description: Use para o layout compartilhado e responsivo do frontend — cabeçalho com navegação condicional por tipo de usuário, menu mobile, página 404 e revisão final do roteador (Fase 14 do PLAN.md). Depende do auth-context e do router já existirem.
 mode: subagent
-model: minimax/MiniMax-M3
+model: anthropic/claude-sonnet-5
 tools:
   read: true
   write: true

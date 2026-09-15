@@ -1,7 +1,7 @@
 ---
 description: Use para tudo relacionado a autenticação e autorização no backend — AuthenticateUseCase, plugin JWT, middlewares verify-jwt/verify-user-type, rota POST /login e guardas de autorização nas rotas de publicacao/usuario (Fases 2.2, 2.3, 3.1 e 3.2 do PLAN.md). Este é código sensível de segurança; sempre fazer uma revisão de segurança manual antes de considerar concluído.
 mode: subagent
-model: minimax/MiniMax-M3
+model: anthropic/claude-sonnet-5
 tools:
   read: true
   write: true

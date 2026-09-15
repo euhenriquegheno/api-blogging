@@ -1,7 +1,7 @@
 ---
 description: Use PROACTIVELY para decisões de arquitetura que atravessam múltiplos módulos, para arbitrar as "Decisões em aberto" do SPEC.md, e para revisar (sem implementar) mudanças estruturais como a migração para MySQL ou a integração de autenticação/autorização entre backend e frontend. Não usar para implementar código — apenas para decidir e revisar.
 mode: subagent
-model: minimax/MiniMax-M3
+model: anthropic/claude-opus-5
 tools:
   read: true
   grep: true

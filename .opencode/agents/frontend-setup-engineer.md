@@ -1,7 +1,7 @@
 ---
 description: Use apenas para o bootstrap inicial do projeto frontend (Task 7.1 do PLAN.md) — inicializar React + Vite + TypeScript + Tailwind + Vitest na pasta frontend/ que hoje só tem o scaffold de diretórios, e criar os tipos de domínio base. Não usar depois que o projeto já estiver inicializado.
 mode: subagent
-model: minimax/MiniMax-M3
+model: anthropic/claude-sonnet-5
 tools:
   read: true
   write: true

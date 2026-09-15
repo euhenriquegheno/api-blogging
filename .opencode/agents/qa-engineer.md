@@ -1,7 +1,7 @@
 ---
 description: Use para executar e reportar o resultado de builds/testes/critérios de aceitação — npm run build, npm test/test:coverage no backend, npm run build/test dentro de frontend/, docker compose config/up, e checar os critérios de aceitação do SPEC.md e do PLAN.md. Este agent só lê e executa comandos; nunca corrige código — reporta as falhas para o agent especializado corrigir.
 mode: subagent
-model: minimax/MiniMax-M3
+model: anthropic/claude-haiku-4-5-20251001
 tools:
   read: true
   bash: true
