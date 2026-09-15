@@ -1,6 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 import { IUsuario } from './models/usuario.interface'
-import { TipoUsuario } from './models/tipo-usuario.enum'
 
 @Entity({
   name: 'usuario',
@@ -22,5 +21,5 @@ export class Usuario implements IUsuario {
   cpf!: string
 
   @Column({ name: 'tipo', type: 'int' })
-  tipo!: TipoUsuario
+  tipo!: number
 }

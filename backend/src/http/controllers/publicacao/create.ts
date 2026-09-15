@@ -7,9 +7,12 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
     titulo: z.string(),
     conteudo: z.string(),
+    usuario_id: z.coerce.number(),
   })
 
-  const { titulo, conteudo } = registerBodySchema.parse(request.body)
+  const { titulo, conteudo, usuario_id } = registerBodySchema.parse(
+    request.body,
+  )
 
   const createPublicacaoUseCase = makeCreatePublicacaoUseCase()
 
@@ -17,7 +20,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     titulo,
     conteudo,
     usuario: {
-      id: request.user.sub,
+      id: usuario_id,
     } as Usuario,
   })
 

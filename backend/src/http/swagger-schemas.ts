@@ -1,13 +1,3 @@
-import { z } from 'zod'
-import { TipoUsuario } from '../entities/models/tipo-usuario.enum'
-
-const tipoUsuarioZodSchema = z.nativeEnum(TipoUsuario)
-// `.options` inclui o reverse-mapping de enums numéricos (ex.: 'ADMINISTRADOR'),
-// então filtramos para manter apenas os valores numéricos válidos do enum.
-const tipoUsuarioValores = tipoUsuarioZodSchema.options.filter(
-  (valor): valor is TipoUsuario => typeof valor === 'number',
-)
-
 export const usuarioSchema = {
   type: 'object',
   properties: {
@@ -15,7 +5,7 @@ export const usuarioSchema = {
     email: { type: 'string' },
     nome: { type: 'string' },
     cpf: { type: 'string' },
-    tipo: { type: 'number', enum: tipoUsuarioValores },
+    tipo: { type: 'number' },
   },
 }
 
@@ -31,26 +21,11 @@ export const publicacaoSchema = {
 
 export const publicacaoBodySchema = {
   type: 'object',
-  required: ['titulo', 'conteudo'],
+  required: ['titulo', 'conteudo', 'usuario_id'],
   properties: {
     titulo: { type: 'string' },
     conteudo: { type: 'string' },
-  },
-}
-
-export const loginBodySchema = {
-  type: 'object',
-  required: ['email', 'senha'],
-  properties: {
-    email: { type: 'string' },
-    senha: { type: 'string', format: 'password' },
-  },
-}
-
-export const loginResponseSchema = {
-  type: 'object',
-  properties: {
-    token: { type: 'string' },
+    usuario_id: { type: 'number', description: 'ID do docente autor' },
   },
 }
 
@@ -62,10 +37,6 @@ export const usuarioBodySchema = {
     senha: { type: 'string', format: 'password' },
     nome: { type: 'string' },
     cpf: { type: 'string' },
-    tipo: {
-      type: 'number',
-      enum: tipoUsuarioValores,
-      description: 'Tipo do usuário (1=Administrador, 2=Professor, 3=Aluno)',
-    },
+    tipo: { type: 'number' },
   },
 }

@@ -3,10 +3,9 @@ import { DataSource } from 'typeorm'
 import { env } from '../../env'
 import { Usuario } from '../../entities/usuario.entity'
 import { Publicacao } from '../../entities/publicacao.entity'
-import { Comentario } from '../../entities/comentario.entity'
 
 export const appDataSource = new DataSource({
-  type: 'mysql',
+  type: 'postgres',
   host: env.DATABASE_HOST,
   port: env.DATABASE_PORT,
   username: env.DATABASE_USER,
@@ -14,7 +13,7 @@ export const appDataSource = new DataSource({
   database: env.DATABASE_NAME,
   logging: env.NODE_ENV === 'development',
   synchronize: env.NODE_ENV === 'development',
-  entities: [Usuario, Publicacao, Comentario],
+  entities: [Usuario, Publicacao],
 })
 
 export async function initializeDataSource() {

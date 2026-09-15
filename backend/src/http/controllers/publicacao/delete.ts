@@ -13,10 +13,7 @@ export async function deletePublicacao(
   const { id } = registerParamsSchema.parse(request.params)
 
   const deletePublicacaoUseCase = makeDeletePublicacaoUseCase()
-  await deletePublicacaoUseCase.handler(id, {
-    id: request.user.sub,
-    tipo: request.user.tipo,
-  })
+  await deletePublicacaoUseCase.handler(id)
 
   return reply.status(204).send()
 }

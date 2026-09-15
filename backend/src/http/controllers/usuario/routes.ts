@@ -5,20 +5,11 @@ import { findAllUsuarios } from './find-all'
 import { deleteUsuario } from './delete'
 import { update } from './update'
 import { usuarioBodySchema, usuarioSchema } from '../../swagger-schemas'
-import { verifyJwt } from '../../middlewares/verify-jwt'
-import { verifyUserType } from '../../middlewares/verify-user-type'
-import { TipoUsuario } from '../../../entities/models/tipo-usuario.enum'
-
-const somenteAdministrador = [
-  verifyJwt,
-  verifyUserType([TipoUsuario.ADMINISTRADOR]),
-]
 
 export async function usuarioRoutes(app: FastifyInstance) {
   app.post(
     '/user',
     {
-      preHandler: somenteAdministrador,
       schema: {
         tags: ['Usuários'],
         summary: 'Cria um usuário',
@@ -32,7 +23,6 @@ export async function usuarioRoutes(app: FastifyInstance) {
   app.get(
     '/user/:id',
     {
-      preHandler: somenteAdministrador,
       schema: {
         tags: ['Usuários'],
         summary: 'Obtém um usuário pelo ID',
@@ -50,7 +40,6 @@ export async function usuarioRoutes(app: FastifyInstance) {
   app.get(
     '/user',
     {
-      preHandler: somenteAdministrador,
       schema: {
         tags: ['Usuários'],
         summary: 'Lista usuários',
@@ -70,7 +59,6 @@ export async function usuarioRoutes(app: FastifyInstance) {
   app.delete(
     '/user/:id',
     {
-      preHandler: somenteAdministrador,
       schema: {
         tags: ['Usuários'],
         summary: 'Exclui um usuário',
@@ -88,7 +76,6 @@ export async function usuarioRoutes(app: FastifyInstance) {
   app.put(
     '/user/:id',
     {
-      preHandler: somenteAdministrador,
       schema: {
         tags: ['Usuários'],
         summary: 'Edita um usuário',

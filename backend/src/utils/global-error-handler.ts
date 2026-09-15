@@ -22,9 +22,6 @@ export const errorHandlerMap: ErrorHandlerMap = {
   InvalidCredentialsError: (error, _, reply) => {
     return reply.status(401).send({ message: error.message })
   },
-  ForbiddenError: (error, _, reply) => {
-    return reply.status(403).send({ message: error.message })
-  },
 }
 
 export const globalErrorHandler = (

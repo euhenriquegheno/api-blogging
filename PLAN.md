@@ -17,8 +17,8 @@
   - `backend/package.json` sem `pg` e `@types/pg`, com `mysql2` como dependency
   - `backend/.env.example` com `DATABASE_PORT=3306` como valor de exemplo
 - Testes críticos:
-  - [x] `appDataSource.options.type` é igual a `'mysql'` (teste unitário lendo a configuração exportada, sem exigir conexão real)
-  - [x] `npm ls pg` falha com "not found" após `npm ci` (nenhuma dependência de `pg` restante)
+  - [ ] `appDataSource.options.type` é igual a `'mysql'` (teste unitário lendo a configuração exportada, sem exigir conexão real)
+  - [ ] `npm ls pg` falha com "not found" após `npm ci` (nenhuma dependência de `pg` restante)
 
 #### Task 1.2 — Adicionar serviço MySQL ao Docker Compose
 - Agent: DevOps
@@ -27,8 +27,8 @@
   - `docker-compose.yml` e `docker-compose.dev.yml` com serviço `db` (imagem `mysql:8`), variáveis `MYSQL_DATABASE`/`MYSQL_USER`/`MYSQL_PASSWORD`/`MYSQL_ROOT_PASSWORD` lidas de `.env`, volume nomeado `mysql_data:/var/lib/mysql`, `healthcheck` via `mysqladmin ping`
   - serviço `api` com `depends_on: { db: { condition: service_healthy } }`
 - Testes críticos:
-  - [x] `docker compose config` valida os dois arquivos sem erro de sintaxe
-  - [x] `docker compose up -d db` sobe o container e `docker compose exec db mysqladmin ping -h localhost` responde `mysqld is alive`
+  - [ ] `docker compose config` valida os dois arquivos sem erro de sintaxe
+  - [ ] `docker compose up -d db` sobe o container e `docker compose exec db mysqladmin ping -h localhost` responde `mysqld is alive`
 
 ### Fase 2 — Backend: Fundamentos de autenticação
 > Dependências: nenhuma
@@ -44,8 +44,8 @@
   - `backend/src/entities/usuario.entity.ts` com a coluna `tipo` tipada como `TipoUsuario`
   - `backend/src/http/swagger-schemas.ts`: `usuarioBodySchema.tipo` validado via Zod (`z.nativeEnum` equivalente) contra os valores do enum
 - Testes críticos:
-  - [x] `TipoUsuario.ADMINISTRADOR`, `TipoUsuario.PROFESSOR` e `TipoUsuario.ALUNO` existem com valores numéricos distintos entre 1 e 3
-  - [x] `POST /user` com `tipo: 99` (fora do enum) retorna 400 de validação
+  - [ ] `TipoUsuario.ADMINISTRADOR`, `TipoUsuario.PROFESSOR` e `TipoUsuario.ALUNO` existem com valores numéricos distintos entre 1 e 3
+  - [ ] `POST /user` com `tipo: 99` (fora do enum) retorna 400 de validação
 
 #### Task 2.2 — Caso de uso de login (`AuthenticateUseCase`)
 - Agent: Backend Engineer (regras de negócio)
@@ -57,8 +57,8 @@
   - `backend/src/uses-cases/factory/make-authenticate-use-case.ts`
   - `backend/tests/usuario-use-cases.spec.js` com `InMemoryUsuarioRepository` (mesmo padrão de `backend/tests/publicacao-use-cases.spec.js`)
 - Testes críticos:
-  - [x] `AuthenticateUseCase.handler` retorna o usuário quando o e-mail existe e a senha em texto puro confere com o hash bcrypt armazenado
-  - [x] `AuthenticateUseCase.handler` rejeita com `InvalidCredentialsError` quando o e-mail não existe ou a senha não confere
+  - [ ] `AuthenticateUseCase.handler` retorna o usuário quando o e-mail existe e a senha em texto puro confere com o hash bcrypt armazenado
+  - [ ] `AuthenticateUseCase.handler` rejeita com `InvalidCredentialsError` quando o e-mail não existe ou a senha não confere
 
 #### Task 2.3 — Plugin JWT e middlewares de autenticação/autorização
 - Agent: Backend Engineer (infraestrutura HTTP)
@@ -70,8 +70,8 @@
   - `backend/src/http/middlewares/verify-jwt.ts`: preHandler que chama `request.jwtVerify()` e retorna 401 se ausente/inválido
   - `backend/src/http/middlewares/verify-user-type.ts`: `verifyUserType(tiposPermitidos: TipoUsuario[])` retornando preHandler que responde 403 se `request.user.tipo` não estiver em `tiposPermitidos`
 - Testes críticos:
-  - [x] `app.inject` numa rota protegida por `verifyJwt` sem header `Authorization` retorna 401
-  - [x] `app.inject` com token válido de um usuário `ALUNO` numa rota com `verifyUserType([TipoUsuario.ADMINISTRADOR])` retorna 403
+  - [ ] `app.inject` numa rota protegida por `verifyJwt` sem header `Authorization` retorna 401
+  - [ ] `app.inject` com token válido de um usuário `ALUNO` numa rota com `verifyUserType([TipoUsuario.ADMINISTRADOR])` retorna 403
 
 ### Fase 3 — Backend: Integração de autenticação nas rotas
 > Dependências: Fase 2
@@ -87,8 +87,8 @@
   - `backend/src/http/swagger-schemas.ts` com `loginBodySchema` e `loginResponseSchema`
   - `backend/src/app.ts` registrando `authRoutes`
 - Testes críticos:
-  - [x] `POST /login` com credenciais corretas retorna 200 e um `token` cujo payload decodificado expira 24 horas após a emissão
-  - [x] `POST /login` com credenciais inválidas retorna 401 com `{ message: 'Username or password is incorrect' }`
+  - [ ] `POST /login` com credenciais corretas retorna 200 e um `token` cujo payload decodificado expira 24 horas após a emissão
+  - [ ] `POST /login` com credenciais inválidas retorna 401 com `{ message: 'Username or password is incorrect' }`
 
 #### Task 3.2 — Guardas de autorização nas rotas existentes
 - Agent: Backend Engineer (HTTP/regras de negócio)
@@ -100,8 +100,8 @@
   - `backend/src/uses-cases/update-publicacao.ts` e `backend/src/uses-cases/delete-publicacao.ts` recebendo `usuarioLogado: { id: number; tipo: TipoUsuario }` e lançando `ForbiddenError` quando `tipo === PROFESSOR` e `usuario.id !== publicacao.usuario.id`
   - `backend/src/utils/global-error-handler.ts` com `ForbiddenError -> 403`
 - Testes críticos:
-  - [x] Um Professor autenticado consegue editar/excluir um post cujo `usuario.id` é o seu próprio ID
-  - [x] Um Professor autenticado recebe 403 ao tentar editar/excluir um post de outro professor, enquanto um Administrador consegue
+  - [ ] Um Professor autenticado consegue editar/excluir um post cujo `usuario.id` é o seu próprio ID
+  - [ ] Um Professor autenticado recebe 403 ao tentar editar/excluir um post de outro professor, enquanto um Administrador consegue
 
 ### Fase 4 — Backend: Modelo de dados de Comentários
 > Dependências: nenhuma
@@ -118,8 +118,8 @@
   - `backend/src/repositories/typeorm/comentario.repository.ts` implementando a interface
   - `backend/src/lib/typeorm/typeorm.ts` com `Comentario` adicionado ao array `entities`
 - Testes críticos:
-  - [x] Instanciar um `Comentario` com `conteudo`, `usuario` e `publicacao` válidos preserva os três campos (teste unitário de construção, sem banco)
-  - [x] `appDataSource.options.entities` contém a classe `Comentario` após a alteração
+  - [ ] Instanciar um `Comentario` com `conteudo`, `usuario` e `publicacao` válidos preserva os três campos (teste unitário de construção, sem banco)
+  - [ ] `appDataSource.options.entities` contém a classe `Comentario` após a alteração
 
 ### Fase 5 — Backend: Casos de uso de Comentários
 > Dependências: Fase 3 (guardas de autorização) e Fase 4 (repositório de `Comentario`)
@@ -135,8 +135,8 @@
   - `backend/src/http/controllers/comentario/create.ts`: valida body com Zod (`{ conteudo: string }`), usa `request.user.sub` como autor e `:id` da rota como `publicacaoId`, retorna 201
   - `backend/tests/comentario-use-cases.spec.js` (parte de criação) com `InMemoryComentarioRepository`
 - Testes críticos:
-  - [x] `CreateComentarioUseCase.handler` retorna o comentário criado associado ao `usuario` e à `publicacao` informados
-  - [x] O controller retorna 400 quando `conteudo` é uma string vazia
+  - [ ] `CreateComentarioUseCase.handler` retorna o comentário criado associado ao `usuario` e à `publicacao` informados
+  - [ ] O controller retorna 400 quando `conteudo` é uma string vazia
 
 #### Task 5.2 — Caso de uso e controller de listagem de comentários
 - Agent: Backend Engineer
@@ -147,8 +147,8 @@
   - `backend/src/http/controllers/comentario/find-all.ts`: rota pública, aceita `page`/`limit` via querystring
   - `backend/tests/comentario-use-cases.spec.js` (parte de listagem)
 - Testes críticos:
-  - [x] `FindAllComentarioUseCase.handler` retorna apenas os comentários da `publicacaoId` informada, ordenados por `criadoEm`
-  - [x] `FindAllComentarioUseCase.handler` retorna array vazio para uma publicação sem comentários (não lança erro)
+  - [ ] `FindAllComentarioUseCase.handler` retorna apenas os comentários da `publicacaoId` informada, ordenados por `criadoEm`
+  - [ ] `FindAllComentarioUseCase.handler` retorna array vazio para uma publicação sem comentários (não lança erro)
 
 ### Fase 6 — Backend: Integração final de Comentários
 > Dependências: Fase 5

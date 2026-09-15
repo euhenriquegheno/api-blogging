@@ -1,24 +1,4 @@
 services:
-  db:
-    image: mysql:8
-    env_file:
-      - ./backend/.env
-    environment:
-      MYSQL_DATABASE: ${DATABASE_NAME}
-      MYSQL_USER: ${DATABASE_USER}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
   api:
     build:
       context: ./backend
@@ -31,10 +11,4 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-    depends_on:
-      db:
-        condition: service_healthy
     command: npm run start:dev
-
-volumes:
-  mysql_data:

@@ -42,20 +42,6 @@ export class UsuarioRepository implements IUsuarioRepository {
     })
   }
 
-  async findByEmail(email: string): Promise<IUsuario | null> {
-    return this.repository.findOne({
-      select: {
-        id: true,
-        email: true,
-        senha: true,
-        nome: true,
-        cpf: true,
-        tipo: true,
-      },
-      where: { email },
-    })
-  }
-
   update(usuario: IUsuario): Promise<IUsuario> {
     return this.repository.save(usuario)
   }
