@@ -151,7 +151,7 @@ testar interativamente os endpoints documentados.
 ```bash
 npm test
 npm run test:coverage
-```
+``` 
 
 Cobertura mínima exigida: 20% em linhas, instruções, funções e branches
 (`backend/jest.config.js`).
