@@ -33,7 +33,12 @@ posts e usuários) e evolui em duas frentes:
 
 ### 2.2 Modelo de dados
 
-```
+```mermaid
+erDiagram
+    USUARIO ||--o{ PUBLICACAO : autor
+    USUARIO ||--o{ COMENTARIO : autor
+    PUBLICACAO ||--o{ COMENTARIO : recebe
+
     USUARIO {
         int id
         string nome
@@ -207,6 +212,3 @@ trouxe alguns desafios específicos:
   desenvolvimento. A solução foi um script de seed idempotente
   (`backend/src/scripts/seed-admin.ts`) que cria um Administrador padrão
   apenas se nenhum usuário existir ainda.
-
-## 6. Video
-https://youtu.be/YRWSrShEHRA
