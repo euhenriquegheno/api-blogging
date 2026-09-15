@@ -36,21 +36,5 @@ services:
         condition: service_healthy
     command: npm run start:dev
 
-  web:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      target: development
-    env_file:
-      - ./frontend/.env
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    depends_on:
-      - api
-    command: npm run dev -- --host
-
 volumes:
   mysql_data:

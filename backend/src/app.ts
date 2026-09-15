@@ -1,5 +1,4 @@
 import fastify from 'fastify'
-import cors from '@fastify/cors'
 import fastifyJwt from '@fastify/jwt'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
@@ -11,10 +10,6 @@ import { globalErrorHandler } from './utils/global-error-handler'
 import { env } from './env'
 
 export const app = fastify()
-
-app.register(cors, {
-  origin: true,
-})
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,

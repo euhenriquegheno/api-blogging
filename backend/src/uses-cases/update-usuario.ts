@@ -5,7 +5,7 @@ import { ResourceNotFoundError } from './errors/resource-not-found'
 export class UpdateUsuarioUseCase {
   constructor(private usuarioRepository: IUsuarioRepository) {}
 
-  async handler(id: number, usuarioNew: Partial<IUsuario>) {
+  async handler(id: number, usuarioNew: IUsuario) {
     const usuarioOld = await this.usuarioRepository.findById(id)
 
     if (!usuarioOld) {
