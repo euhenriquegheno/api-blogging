@@ -186,33 +186,33 @@
   - `frontend/src/types/publicacao.ts`: `interface Publicacao { id: string; titulo: string; conteudo: string; usuario: Usuario }`
   - `frontend/src/types/comentario.ts`: `interface Comentario { id: string; conteudo: string; criadoEm: string; usuario: Usuario }`
 - Testes críticos:
-  - [ ] `npm run build` gera `frontend/dist` sem erros de TypeScript
-  - [ ] `npm run test` executa `src/test/app.test.tsx` (renderiza `<App />`) e passa
+  - [x] `npm run build` gera `frontend/dist` sem erros de TypeScript
+  - [x] `npm run test` executa `src/test/app.test.tsx` (renderiza `<App />`) e passa
 
 ### Fase 8 — Frontend: Autenticação — serviços e contexto
 > Dependências: Fase 7
 > Paralelismo: Task 8.1 e Task 8.2 rodam em paralelo (arquivos distintos)
 > Critério: `cd frontend && npm run test` passa, incluindo os testes de `auth-api` e `auth-context`
 
-#### Task 8.1 — Cliente HTTP e serviço de autenticação
+#### Task 8.1 — Cliente HTTP e serviço de autenticação ✅
 - Agent: Frontend Engineer
 - Input: `frontend/src/types/usuario.ts` (Fase 7)
 - Output:
   - `frontend/src/services/api-client.ts`: `apiClient(path: string, options?: RequestInit)` usando `fetch`, `baseURL` de `VITE_API_URL`, injeta `Authorization: Bearer <token>` quando houver token salvo, lança erro tipado em respostas não-2xx
   - `frontend/src/features/auth/api/auth-api.ts`: `login(email: string, senha: string): Promise<{ token: string }>`
 - Testes críticos:
-  - [ ] `login` faz `POST /login` com `{ email, senha }` e retorna `{ token }` quando a API responde 200 (mock de `fetch`)
-  - [ ] `login` rejeita com um erro contendo a mensagem da API quando a resposta é 401
+  - [x] `login` faz `POST /login` com `{ email, senha }` e retorna `{ token }` quando a API responde 200 (mock de `fetch`)
+  - [x] `login` rejeita com um erro contendo a mensagem da API quando a resposta é 401
 
-#### Task 8.2 — Contexto de sessão e guarda de rotas
+#### Task 8.2 — Contexto de sessão e guarda de rotas ✅
 - Agent: Frontend Engineer
 - Input: `frontend/src/types/usuario.ts` (Fase 7)
 - Output:
   - `frontend/src/features/auth/context/auth-context.tsx`: `AuthProvider` e hook `useAuth()` expondo `{ usuario, token, signIn(token), signOut() }`, decodifica o JWT (`sub`/`tipo`) e persiste em `localStorage`
   - `frontend/src/features/auth/components/protected-route.tsx`: `<ProtectedRoute tiposPermitidos?={Usuario['tipo'][]}>` redireciona para `/login` se não autenticado, ou para `/` se o `tipo` não estiver em `tiposPermitidos`
 - Testes críticos:
-  - [ ] `ProtectedRoute` redireciona para `/login` quando `useAuth().usuario` é `null`
-  - [ ] `ProtectedRoute` renderiza o conteúdo filho quando o usuário está autenticado e seu `tipo` está em `tiposPermitidos`
+  - [x] `ProtectedRoute` redireciona para `/login` quando `useAuth().usuario` é `null`
+  - [x] `ProtectedRoute` renderiza o conteúdo filho quando o usuário está autenticado e seu `tipo` está em `tiposPermitidos`
 
 ### Fase 9 — Frontend: Tela de login e roteamento
 > Dependências: Fase 8
@@ -225,8 +225,8 @@
 - Output:
   - `frontend/src/pages/login-page.tsx`: formulário controlado (`email`, `senha`), chama `login()`, em sucesso chama `signIn(token)` e navega para `/`; em erro exibe "E-mail ou senha inválidos"
 - Testes críticos:
-  - [ ] Submeter o formulário com credenciais válidas chama `signIn` e navega para `/`
-  - [ ] Submeter o formulário com credenciais inválidas exibe a mensagem de erro e não chama `signIn`
+  - [x] Submeter o formulário com credenciais válidas chama `signIn` e navega para `/`
+  - [x] Submeter o formulário com credenciais inválidas exibe a mensagem de erro e não chama `signIn`
 
 #### Task 9.2 — Configuração do React Router
 - Agent: Frontend Engineer
@@ -234,8 +234,8 @@
 - Output:
   - `frontend/src/app/config/router.tsx`: `createBrowserRouter` com `/login` (pública, componente `LoginPage`, contrato: default export de `frontend/src/pages/login-page.tsx`), `/` (pública), `/posts/:id` (pública), `/posts/novo` e `/posts/:id/editar` (`ProtectedRoute` tipos `PROFESSOR`/`ADMINISTRADOR`), `/admin/*` (`ProtectedRoute` tipo `ADMINISTRADOR`)
 - Testes críticos:
-  - [ ] Navegar para `/admin` sem autenticação redireciona para `/login`
-  - [ ] Navegar para `/posts/novo` autenticado como `ALUNO` redireciona para `/`
+  - [x] Navegar para `/admin` sem autenticação redireciona para `/login`
+  - [x] Navegar para `/posts/novo` autenticado como `ALUNO` redireciona para `/`
 
 ### Fase 10 — Frontend: Camada de dados de posts e comentários
 > Dependências: Fase 7
@@ -248,8 +248,8 @@
 - Output:
   - `frontend/src/features/posts/api/posts-api.ts`: `listPosts(page, limit)`, `searchPosts(q)`, `getPost(id)`, `createPost({ titulo, conteudo })`, `updatePost(id, { titulo, conteudo })`, `deletePost(id)`
 - Testes críticos:
-  - [ ] `listPosts(1, 10)` chama `GET /posts?page=1&limit=10` e retorna `Publicacao[]` tipado
-  - [ ] `searchPosts('mysql')` chama `GET /posts/search?q=mysql`
+  - [x] `listPosts(1, 10)` chama `GET /posts?page=1&limit=10` e retorna `Publicacao[]` tipado
+  - [x] `searchPosts('mysql')` chama `GET /posts/search?q=mysql`
 
 #### Task 10.2 — API de comentários
 - Agent: Frontend Engineer
@@ -257,22 +257,22 @@
 - Output:
   - `frontend/src/features/posts/api/comentarios-api.ts`: `listComentarios(publicacaoId, page, limit)`, `createComentario(publicacaoId, conteudo)`
 - Testes críticos:
-  - [ ] `createComentario` envia `POST /posts/:id/comments` com o header `Authorization` presente
-  - [ ] `listComentarios` retorna `[]` quando a API responde 200 com corpo vazio
+  - [x] `createComentario` envia `POST /posts/:id/comments` com o header `Authorization` presente
+  - [x] `listComentarios` retorna `[]` quando a API responde 200 com corpo vazio
 
 ### Fase 11 — Frontend: Área pública
 > Dependências: Fase 9, Fase 10
 > Paralelismo: Task 11.1 e Task 11.2 rodam em paralelo (arquivos distintos)
 > Critério: `cd frontend && npm run test` passa, incluindo `posts-list-page.test.tsx` e `post-detail-page.test.tsx`
 
-#### Task 11.1 — Listagem de posts com paginação e busca
+#### Task 11.1 — Listagem de posts com paginação e busca ✅
 - Agent: Frontend Engineer
 - Input: `posts-api.ts` (Fase 10), `router.tsx` (Fase 9)
 - Output:
   - `frontend/src/pages/posts-list-page.tsx`, `frontend/src/features/posts/components/post-card.tsx`, `frontend/src/features/posts/components/search-bar.tsx`, `frontend/src/components/pagination.tsx`
 - Testes críticos:
-  - [ ] Digitar um termo na `search-bar` e submeter chama `searchPosts` e renderiza os resultados retornados
-  - [ ] Clicar em "Próxima página" chama `listPosts` com `page + 1`
+  - [x] Digitar um termo na `search-bar` e submeter chama `searchPosts` e renderiza os resultados retornados
+  - [x] Clicar em "Próxima página" chama `listPosts` com `page + 1`
 
 #### Task 11.2 — Leitura de post e comentários
 - Agent: Frontend Engineer
@@ -280,8 +280,8 @@
 - Output:
   - `frontend/src/pages/post-detail-page.tsx`, `frontend/src/features/posts/components/comment-list.tsx`, `frontend/src/features/posts/components/comment-form.tsx` (visível apenas se `useAuth().usuario` existir)
 - Testes críticos:
-  - [ ] Um visitante não autenticado vê a `comment-list` mas não vê o `comment-form`
-  - [ ] Um usuário autenticado submete um comentário e ele aparece na `comment-list` após a chamada a `createComentario`
+  - [x] Um visitante não autenticado vê a `comment-list` mas não vê o `comment-form`
+  - [x] Um usuário autenticado submete um comentário e ele aparece na `comment-list` após a chamada a `createComentario`
 
 ### Fase 12 — Frontend: Área do Professor
 > Dependências: Fase 9, Fase 10
@@ -294,8 +294,8 @@
 - Output:
   - `frontend/src/pages/create-post-page.tsx`: formulário com `titulo` e `conteudo` (textarea simples), chama `createPost` e navega para `/posts/:id` do post criado
 - Testes críticos:
-  - [ ] Submeter o formulário com `titulo` e `conteudo` preenchidos chama `createPost` e navega para o post criado
-  - [ ] Submeter o formulário com `titulo` vazio exibe erro de validação e não chama `createPost`
+  - [x] Submeter o formulário com `titulo` e `conteudo` preenchidos chama `createPost` e navega para o post criado
+  - [x] Submeter o formulário com `titulo` vazio exibe erro de validação e não chama `createPost`
 
 #### Task 12.2 — Edição de post
 - Agent: Frontend Engineer
@@ -303,46 +303,46 @@
 - Output:
   - `frontend/src/pages/edit-post-page.tsx`: carrega o post via `getPost(id)`, pré-preenche o formulário, chama `updatePost` ao submeter
 - Testes críticos:
-  - [ ] A página carrega e exibe `titulo`/`conteudo` existentes do post ao montar
-  - [ ] Submeter o formulário editado chama `updatePost(id, { titulo, conteudo })` com os novos valores
+  - [x] A página carrega e exibe `titulo`/`conteudo` existentes do post ao montar
+  - [x] Submeter o formulário editado chama `updatePost(id, { titulo, conteudo })` com os novos valores
 
 ### Fase 13 — Frontend: Área Administrativa
 > Dependências: Fase 9, Fase 10
 > Paralelismo: Task 13.1 e Task 13.2 rodam em paralelo (arquivos distintos)
 > Critério: `cd frontend && npm run test` passa, incluindo `admin-posts-page.test.tsx` e `admin-create-usuario-page.test.tsx`
 
-#### Task 13.1 — Gestão administrativa de posts
+#### Task 13.1 — Gestão administrativa de posts ✅
 - Agent: Frontend Engineer
 - Input: `posts-api.ts` (Fase 10)
 - Output:
   - `frontend/src/pages/admin-posts-page.tsx`: lista todos os posts (`listPosts`) com "Editar" (navega para `/posts/:id/editar`) e "Excluir" (chama `deletePost` com confirmação)
 - Testes críticos:
-  - [ ] Clicar em "Excluir" e confirmar chama `deletePost(id)` e remove o post da lista exibida
-  - [ ] Clicar em "Excluir" e cancelar a confirmação não chama `deletePost`
+  - [x] Clicar em "Excluir" e confirmar chama `deletePost(id)` e remove o post da lista exibida
+  - [x] Clicar em "Excluir" e cancelar a confirmação não chama `deletePost`
 
-#### Task 13.2 — Criação de contas de usuário
+#### Task 13.2 — Criação de contas de usuário ✅
 - Agent: Frontend Engineer
 - Input: `api-client.ts` (Fase 8), `types/usuario.ts` (Fase 7)
 - Output:
   - `frontend/src/features/auth/api/usuario-api.ts`: `createUsuario({ nome, email, senha, cpf, tipo })`
   - `frontend/src/pages/admin-create-usuario-page.tsx`: formulário com seletor de `tipo` (Administrador/Professor/Aluno), chama `createUsuario` e exibe confirmação
 - Testes críticos:
-  - [ ] Submeter o formulário preenchido chama `createUsuario` com o `tipo` selecionado e exibe mensagem de sucesso
-  - [ ] Submeter o formulário com `email` em formato inválido exibe erro de validação e não chama `createUsuario`
+  - [x] Submeter o formulário preenchido chama `createUsuario` com o `tipo` selecionado e exibe mensagem de sucesso
+  - [x] Submeter o formulário com `email` em formato inválido exibe erro de validação e não chama `createUsuario`
 
 ### Fase 14 — Frontend: Layout responsivo e finalização
 > Dependências: Fase 11, Fase 12, Fase 13
 > Paralelismo: Task 14.1 e Task 14.2 rodam em paralelo (arquivos distintos)
 > Critério: `cd frontend && npm run build && npm run test` passa, incluindo o teste de `main-layout` que verifica a navegação condicional por tipo de usuário
 
-#### Task 14.1 — Layout responsivo compartilhado
+#### Task 14.1 — Layout responsivo compartilhado ✅
 - Agent: Frontend Engineer (UI)
 - Input: `auth-context.tsx` (Fase 8)
 - Output:
   - `frontend/src/layouts/main-layout.tsx`: cabeçalho com navegação condicional por `tipo` ("Novo post" para Professor/Administrador, "Administração" para Administrador, "Entrar"/"Sair" conforme sessão), menu mobile com toggle (breakpoints Tailwind `sm:`/`md:`)
 - Testes críticos:
-  - [ ] Com um usuário `ALUNO` autenticado, os links "Novo post" e "Administração" não são renderizados
-  - [ ] Com um usuário `ADMINISTRADOR` autenticado, os links "Novo post" e "Administração" são renderizados
+  - [x] Com um usuário `ALUNO` autenticado, os links "Novo post" e "Administração" não são renderizados
+  - [x] Com um usuário `ADMINISTRADOR` autenticado, os links "Novo post" e "Administração" são renderizados
 
 #### Task 14.2 — Página 404 e revisão final do roteador
 - Agent: Frontend Engineer
@@ -351,7 +351,7 @@
   - `frontend/src/pages/not-found-page.tsx`
   - `frontend/src/app/config/router.tsx` atualizado: envolve as rotas com `main-layout.tsx`, adiciona rota coringa (`path: '*'`) para `not-found-page.tsx`, e confirma o registro de todas as páginas das Fases 11-13
 - Testes críticos:
-  - [ ] Acessar uma rota inexistente renderiza `not-found-page.tsx`
-  - [ ] Todas as rotas protegidas (`/posts/novo`, `/posts/:id/editar`, `/admin/*`) estão envolvidas por `ProtectedRoute` no router final
+  - [x] Acessar uma rota inexistente renderiza `not-found-page.tsx`
+  - [x] Todas as rotas protegidas (`/posts/novo`, `/posts/:id/editar`, `/admin/*`) estão envolvidas por `ProtectedRoute` no router final
 
 ---

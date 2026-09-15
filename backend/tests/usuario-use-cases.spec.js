@@ -5,6 +5,9 @@ const {
 const {
   InvalidCredentialsError,
 } = require('../build/uses-cases/errors/invalid-credentials-error')
+const {
+  UpdateUsuarioUseCase,
+} = require('../build/uses-cases/update-usuario')
 
 class InMemoryUsuarioRepository {
   usuarios = []
@@ -91,5 +94,43 @@ describe('Authenticate use case', () => {
     await expect(
       useCase.handler('professor@example.com', 'senha-errada'),
     ).rejects.toBeInstanceOf(InvalidCredentialsError)
+  })
+})
+
+describe('Update usuario use case', () => {
+  it('mantém a senha atual quando os novos dados não incluem uma senha', async () => {
+    const repository = new InMemoryUsuarioRepository()
+    const usuario = await makeUsuario()
+    repository.usuarios.push(usuario)
+    const useCase = new UpdateUsuarioUseCase(repository)
+
+    const atualizado = await useCase.handler(1, {
+      email: 'novo-email@example.com',
+      nome: 'Novo Nome',
+      cpf: usuario.cpf,
+      tipo: usuario.tipo,
+    })
+
+    expect(atualizado.email).toBe('novo-email@example.com')
+    expect(atualizado.nome).toBe('Novo Nome')
+    expect(atualizado.senha).toBe(usuario.senha)
+  })
+
+  it('substitui a senha quando os novos dados incluem uma senha', async () => {
+    const repository = new InMemoryUsuarioRepository()
+    const usuario = await makeUsuario()
+    repository.usuarios.push(usuario)
+    const useCase = new UpdateUsuarioUseCase(repository)
+    const novaSenhaHash = await bcrypt.hash('senha-nova', 8)
+
+    const atualizado = await useCase.handler(1, {
+      email: usuario.email,
+      nome: usuario.nome,
+      cpf: usuario.cpf,
+      tipo: usuario.tipo,
+      senha: novaSenhaHash,
+    })
+
+    expect(atualizado.senha).toBe(novaSenhaHash)
   })
 })
