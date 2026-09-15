@@ -8,8 +8,7 @@
     "start": "node build/server.js",
     "build": "tsc --rootDir src --outDir build",
     "test": "npm run build && jest",
-    "test:coverage": "npm run build && jest --coverage",
-    "seed:admin": "tsx src/scripts/seed-admin.ts"
+    "test:coverage": "npm run build && jest --coverage"
   },
   "keywords": [],
   "author": "",

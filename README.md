@@ -93,32 +93,6 @@ docker compose up --build
 - API: `http://localhost:3000`
 - Frontend: `http://localhost:8080`
 
-### Primeiro acesso (criar o Administrador inicial)
-
-Como não há self-signup e **todas** as rotas de `/user` exigem um
-Administrador já autenticado, um banco novo não tem nenhum usuário — logo,
-ninguém consegue logar. Rode o script de seed uma vez, com os containers no
-ar, para criar o primeiro Administrador:
-
-```bash
-docker compose exec api node build/scripts/seed-admin.js
-```
-
-Por padrão ele cria `admin@blog.com` / `admin123` (idempotente — rodar de
-novo não duplica nem falha se o usuário já existir). Para customizar,
-defina `SEED_ADMIN_EMAIL`, `SEED_ADMIN_SENHA`, `SEED_ADMIN_NOME` e
-`SEED_ADMIN_CPF` no `backend/.env` antes de rodar o comando. Troque a senha
-padrão (ou crie outro admin e apague este) antes de expor a aplicação
-publicamente.
-
-Rodando localmente sem Docker, ou via `docker-compose.dev.yml`, use
-`npm run seed:admin` (ou `docker compose -f docker-compose.dev.yml exec
-api npm run seed:admin`) em vez do comando acima — a imagem de
-desenvolvimento não tem o build compilado, mas tem o `tsx`. O mesmo
-comando com `build/scripts/seed-admin.js` funciona também com o
-`docker-compose.external-db.yml`, trocando `docker compose` por
-`docker compose -f docker-compose.external-db.yml`.
-
 **Produção com banco de dados externo** (ex.: MySQL gerenciado na AWS RDS,
 Supabase etc.) — sem subir banco local:
 
